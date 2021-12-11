@@ -11,6 +11,38 @@ namespace PlexHelpers.Common
     {
         public static List<string> VideoFileExtensions = new List<string>{ ".mkv", ".mp4", ".avi", ".m4v", ".mpeg", ".mpg", ".wmv" };
 
+        public static List<PlexMetadDataItem> ReadPlexTVShowCSV(string filePath)
+        {
+            var newTVShows = new List<PlexMetadDataItem>();
+
+            var tvShows = File.ReadAllLines(filePath);
+
+            for (var i = 0; i < tvShows.Length; i++)
+            {
+                TextFieldParser parser = new TextFieldParser(new StringReader(tvShows[i]));
+                parser.HasFieldsEnclosedInQuotes = true;
+                parser.SetDelimiters(",");
+
+                string[] parts = null;
+
+                while (!parser.EndOfData)
+                {
+                    parts = parser.ReadFields();
+                }
+
+                try
+                {
+                    newTVShows.Add(PlexMetadDataItem.Parse(parts));
+                }
+                catch (Exception e)
+                {
+                    int u = 0;
+                }
+            }
+
+            return newTVShows;
+        }
+
         public static List<PlexMovie> ReadCSV(string filePath)
         {
             var newMovies = new List<PlexMovie>();
@@ -175,6 +207,40 @@ namespace PlexHelpers.Common
             return newMovies;
         }
 
+        public static List<PlexCollectionTVShow> ReadTVShowCollectionCSV(string filePath)
+        {
+            var newTVShows = new List<PlexCollectionTVShow>();
+
+            var tvShows = File.ReadAllLines(filePath);
+
+            for (var i = 0; i < tvShows.Length; i++)
+            {
+                TextFieldParser parser = new TextFieldParser(new StringReader(tvShows[i]))
+                {
+                    HasFieldsEnclosedInQuotes = true
+                };
+                parser.SetDelimiters(",");
+
+                string[] parts = null;
+
+                while (!parser.EndOfData)
+                {
+                    parts = parser.ReadFields();
+                }
+
+                try
+                {
+                    newTVShows.Add(PlexCollectionTVShow.Parse(parts));
+                }
+                catch (Exception e)
+                {
+                    int u = 0;
+                }
+            }
+
+            return newTVShows;
+        }
+
         public static void WriteCollectionCSV(string filePath, List<PlexCollectionMovie> movies)
         {
             var lines = new List<string>();
@@ -182,6 +248,18 @@ namespace PlexHelpers.Common
             foreach (var movie in movies)
             {
                 lines.Add(Helpers.EscapeCsvField(movie.CollectionName) + "," + Helpers.EscapeCsvField(movie.MovieTitle) + "," + (movie.MovieYear.HasValue ? movie.MovieYear.Value.ToString() : "") + "," + (!string.IsNullOrWhiteSpace(movie.IMDB) ? movie.IMDB : "") + "," + (!string.IsNullOrWhiteSpace(movie.TMDB) ? movie.TMDB : "") + "," + (!string.IsNullOrWhiteSpace(movie.CollectionKey) ? movie.CollectionKey : ""));
+            }
+
+            File.WriteAllLines(filePath, lines);
+        }
+
+        public static void WriteTVShowCollectionCSV(string filePath, List<PlexCollectionTVShow> tvShows)
+        {
+            var lines = new List<string>();
+
+            foreach (var tvShow in tvShows)
+            {
+                lines.Add(tvShow.ToString());
             }
 
             File.WriteAllLines(filePath, lines);

@@ -13,7 +13,7 @@ namespace PlexHelpers.InPlaceProcessor
         private static bool CanDelete = true;
         private static List<PlexMovie> _plexMovies;
         private static string _sourceDrive = "J";
-        private static string _targetDrive = "V";
+        private static string _targetDrive = "B";
         private static string _tmdbDrive = "J";
         private static string _unmatchedDrive = "J";
         private static string _drivePath = @":\Media\Movies";

@@ -37,6 +37,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexHelpers.MovieCollection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexHelpers.MovieDeDuper", "PlexHelpers.MovieDeDuper\PlexHelpers.MovieDeDuper.csproj", "{0377BE26-DA5F-4077-819D-A98C42F59E04}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexHelpers.TVSeriesCollectionExporter", "PlexHelpers.TVSeriesCollectionExporter\PlexHelpers.TVSeriesCollectionExporter.csproj", "{2EECD264-C3CF-4FAC-8FA8-C4995D4F532B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexHelpers.TVSeriesCollectionImporter", "PlexHelpers.TVSeriesCollectionImporter\PlexHelpers.TVSeriesCollectionImporter.csproj", "{DEAA722D-9F26-4D84-A80A-B74954B14CCB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -251,6 +255,30 @@ Global
 		{0377BE26-DA5F-4077-819D-A98C42F59E04}.Release|x64.Build.0 = Release|Any CPU
 		{0377BE26-DA5F-4077-819D-A98C42F59E04}.Release|x86.ActiveCfg = Release|Any CPU
 		{0377BE26-DA5F-4077-819D-A98C42F59E04}.Release|x86.Build.0 = Release|Any CPU
+		{2EECD264-C3CF-4FAC-8FA8-C4995D4F532B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EECD264-C3CF-4FAC-8FA8-C4995D4F532B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EECD264-C3CF-4FAC-8FA8-C4995D4F532B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2EECD264-C3CF-4FAC-8FA8-C4995D4F532B}.Debug|x64.Build.0 = Debug|Any CPU
+		{2EECD264-C3CF-4FAC-8FA8-C4995D4F532B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2EECD264-C3CF-4FAC-8FA8-C4995D4F532B}.Debug|x86.Build.0 = Debug|Any CPU
+		{2EECD264-C3CF-4FAC-8FA8-C4995D4F532B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EECD264-C3CF-4FAC-8FA8-C4995D4F532B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EECD264-C3CF-4FAC-8FA8-C4995D4F532B}.Release|x64.ActiveCfg = Release|Any CPU
+		{2EECD264-C3CF-4FAC-8FA8-C4995D4F532B}.Release|x64.Build.0 = Release|Any CPU
+		{2EECD264-C3CF-4FAC-8FA8-C4995D4F532B}.Release|x86.ActiveCfg = Release|Any CPU
+		{2EECD264-C3CF-4FAC-8FA8-C4995D4F532B}.Release|x86.Build.0 = Release|Any CPU
+		{DEAA722D-9F26-4D84-A80A-B74954B14CCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEAA722D-9F26-4D84-A80A-B74954B14CCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEAA722D-9F26-4D84-A80A-B74954B14CCB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DEAA722D-9F26-4D84-A80A-B74954B14CCB}.Debug|x64.Build.0 = Debug|Any CPU
+		{DEAA722D-9F26-4D84-A80A-B74954B14CCB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DEAA722D-9F26-4D84-A80A-B74954B14CCB}.Debug|x86.Build.0 = Debug|Any CPU
+		{DEAA722D-9F26-4D84-A80A-B74954B14CCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEAA722D-9F26-4D84-A80A-B74954B14CCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEAA722D-9F26-4D84-A80A-B74954B14CCB}.Release|x64.ActiveCfg = Release|Any CPU
+		{DEAA722D-9F26-4D84-A80A-B74954B14CCB}.Release|x64.Build.0 = Release|Any CPU
+		{DEAA722D-9F26-4D84-A80A-B74954B14CCB}.Release|x86.ActiveCfg = Release|Any CPU
+		{DEAA722D-9F26-4D84-A80A-B74954B14CCB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
