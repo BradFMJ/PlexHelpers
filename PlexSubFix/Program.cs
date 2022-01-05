@@ -256,7 +256,7 @@ namespace PlexSubFix
             };
             LanguageCodesNew["ru"] = new List<Regex> { new Regex(".*_russian\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.rus\\.srt$", RegexOptions.Compiled), new Regex("^rus\\.srt$", RegexOptions.Compiled) };
-            LanguageCodesNew["sr"] = new List<Regex> {  new Regex(".*_srp\\.srt$", RegexOptions.Compiled) };
+            LanguageCodesNew["sr"] = new List<Regex> { new Regex(".*_srp\\.srt$", RegexOptions.Compiled) };
             LanguageCodesNew["sk"] = new List<Regex> { new Regex(".*_slo\\.srt$", RegexOptions.Compiled), new Regex(".*_slk\\.srt$", RegexOptions.Compiled), new Regex("^slo\\.srt$", RegexOptions.Compiled) };
             LanguageCodesNew["sl"] = new List<Regex> { new Regex(".*_slovenian\\.srt$", RegexOptions.Compiled), new Regex(".*_slv\\.srt$", RegexOptions.Compiled) };
             //LanguageCodesNew["sb"] = new List<Regex> { };
@@ -410,17 +410,8 @@ namespace PlexSubFix
                     Console.WriteLine(ex);
                 }
             }
-        }
 
-        public static void FixTvShowSubTitles(string path)
-        {
-            DirectoryInfo dInfo = new DirectoryInfo(path);
-            foreach (var directoryInfo in dInfo.EnumerateDirectories())
-            {
-                FixTVShowSubTitles(directoryInfo, "srt");
-                FixTVShowSubTitles(directoryInfo, "sub");
-                FixTVShowSubTitles(directoryInfo, "idx");
-            }
+            DeleteEmptyFolders(dInfo);
         }
 
         public static void FixTvShowNames(string path)
@@ -1072,6 +1063,46 @@ namespace PlexSubFix
             }
         }
 
+        public static void FixTvShowSubTitles(string path)
+        {
+            DirectoryInfo dInfo = new DirectoryInfo(path);
+            foreach (var directoryInfo in dInfo.EnumerateDirectories())
+            {
+                _FixTVShowSubTitles(directoryInfo);
+            }
+        }
+
+        private static void _FixTVShowSubTitles(DirectoryInfo directoryInfo)
+        {
+            var tvShows = directoryInfo.GetFilesByExtensions(".mkv", ".mp4", ".avi", ".m4v", ".mpeg", ".mpg", ".wmv");
+            if (tvShows.Count() < 1)
+            {
+                var subDirs = directoryInfo.GetDirectories();
+                if (subDirs.Length == 0)
+                {
+                    Console.WriteLine(directoryInfo.FullName + " has zero files");
+                    return;
+                }
+                foreach (var subDir in subDirs)
+                {
+                    _FixTVShowSubTitles(subDir);
+                }
+                return;
+            }
+
+            foreach (var tvShow in tvShows)
+            {
+                SearchLanguage(directoryInfo, tvShows.Count(), tvShow, "English", "Eng", "en", "idx");
+                SearchLanguage(directoryInfo, tvShows.Count(), tvShow, "English", "Eng", "en", "sub");
+                foreach (var keyValue in LanguageCodesNew)
+                {
+                    SearchLanguage(directoryInfo, tvShows.Count(), tvShow, keyValue.Value, keyValue.Key, "srt");
+                }
+            }
+
+            DeleteEmptyFolders(directoryInfo);
+        }
+
         public static void FixMovieSubTitles(string path)
         {
             DirectoryInfo dInfo = new DirectoryInfo(path);
@@ -1081,45 +1112,37 @@ namespace PlexSubFix
             }
         }
 
-        private static void MoveFiles(DirectoryInfo searchPath, string targetPath)
+        private static void DeleteEmptyFolders(DirectoryInfo dInfo)
         {
-            foreach (var directoryInfo in searchPath.EnumerateDirectories())
+            var subDirs = dInfo.GetDirectories();
+            foreach (var subDir in subDirs)
             {
-                MoveFiles(directoryInfo, targetPath);
+                DeleteEmptyFolders(subDir);
             }
 
-            FileInfo[] sourcefiles = searchPath.GetFiles();
-
-            foreach (FileInfo sourcefile in sourcefiles)
+            if (!dInfo.GetFiles().Any() && !dInfo.GetDirectories().Any())
             {
-                string destFile = Path.Combine(targetPath, sourcefile.Name);
-
-                if (File.Exists(destFile))
-                {
-                    Console.WriteLine("Cannot move file" + destFile);
-                    continue;
-                }
-                Move(sourcefile.FullName, destFile);
+                dInfo.Delete();
             }
         }
 
         private static void _FixMovieSubTitles(DirectoryInfo directoryInfo)
         {
 
-            var allMovies = directoryInfo.GetFiles("*" + "." + "mkv", SearchOption.AllDirectories).ToList();
-            allMovies.AddRange(directoryInfo.GetFiles("*" + "." + "mp4", SearchOption.AllDirectories).ToList());
-            allMovies.AddRange(directoryInfo.GetFiles("*" + "." + "avi", SearchOption.AllDirectories).ToList());
-            allMovies.AddRange(directoryInfo.GetFiles("*" + "." + "m4v", SearchOption.AllDirectories).ToList());
-            allMovies.AddRange(directoryInfo.GetFiles("*" + "." + "mpeg", SearchOption.AllDirectories).ToList());
-            allMovies.AddRange(directoryInfo.GetFiles("*" + "." + "mpg", System.IO.SearchOption.AllDirectories).ToList());
-            allMovies.AddRange(directoryInfo.GetFiles("*" + "." + "wmv", SearchOption.AllDirectories).ToList());
+            var allVideoFiles = directoryInfo.GetFiles("*" + "." + "mkv", SearchOption.AllDirectories).ToList();
+            allVideoFiles.AddRange(directoryInfo.GetFiles("*" + "." + "mp4", SearchOption.AllDirectories).ToList());
+            allVideoFiles.AddRange(directoryInfo.GetFiles("*" + "." + "avi", SearchOption.AllDirectories).ToList());
+            allVideoFiles.AddRange(directoryInfo.GetFiles("*" + "." + "m4v", SearchOption.AllDirectories).ToList());
+            allVideoFiles.AddRange(directoryInfo.GetFiles("*" + "." + "mpeg", SearchOption.AllDirectories).ToList());
+            allVideoFiles.AddRange(directoryInfo.GetFiles("*" + "." + "mpg", System.IO.SearchOption.AllDirectories).ToList());
+            allVideoFiles.AddRange(directoryInfo.GetFiles("*" + "." + "wmv", SearchOption.AllDirectories).ToList());
 
-            if (IsTVDirectory(allMovies))
+            if (IsTVDirectory(allVideoFiles))
             {
                 return;
             }
 
-            if (allMovies.Count != 1)
+            if (allVideoFiles.Count != 1)
             {
                 Console.WriteLine("ERROR: Folder has multiple files {0}", directoryInfo.FullName);
                 return;
@@ -1185,15 +1208,13 @@ namespace PlexSubFix
             foreach (var keyValue in LanguageCodesNew)
             {
                 var srtFiles = directoryInfo.GetFiles("*.srt", SearchOption.TopDirectoryOnly).ToList();
-
                 var languageBasedSubtitles = srtFiles.Where(p => !p.Name.ToLowerInvariant().Contains(movieName) && keyValue.Value.Any(s => s.IsMatch(p.Name.ToLowerInvariant()))).ToList();
-
                 var exactMatches = srtFiles.Where(p => p.Name.ToLowerInvariant().StartsWith(movieName.Substring(0, movieName.Length - movieFileInfo.Extension.Length) + "." + keyValue.Key.ToLowerInvariant() + ".")).ToList();
 
 
                 languageBasedSubtitles.AddRange(exactMatches);
                 languageBasedSubtitles = languageBasedSubtitles.Distinct(new FileInfoComparer()).ToList();
-                RenameMovieSubTitlesBasedOnLanguage(movieFileInfo, keyValue.Key, languageBasedSubtitles);
+                RenameSubTitlesBasedOnLanguage(movieFileInfo, keyValue.Key, languageBasedSubtitles);
             }
 
             if (directoryInfo.EnumerateDirectories().Any())
@@ -1202,7 +1223,29 @@ namespace PlexSubFix
             }
         }
 
-        private static void RenameMovieSubTitlesBasedOnLanguage(FileInfo movie, string languageCode, List<FileInfo> subTitleFiles)
+        private static void MoveFiles(DirectoryInfo searchPath, string targetPath)
+        {
+            foreach (var directoryInfo in searchPath.EnumerateDirectories())
+            {
+                MoveFiles(directoryInfo, targetPath);
+            }
+
+            FileInfo[] sourcefiles = searchPath.GetFiles();
+
+            foreach (FileInfo sourcefile in sourcefiles)
+            {
+                string destFile = Path.Combine(targetPath, sourcefile.Name);
+
+                if (File.Exists(destFile))
+                {
+                    Console.WriteLine("Cannot move file" + destFile);
+                    continue;
+                }
+                Move(sourcefile.FullName, destFile);
+            }
+        }
+
+        private static void RenameSubTitlesBasedOnLanguage(FileInfo movie, string languageCode, List<FileInfo> subTitleFiles)
         {
             subTitleFiles = subTitleFiles.OrderBy(p => p.Length).ThenBy(p => p.Name.Length).ToList();
 
@@ -1329,37 +1372,6 @@ namespace PlexSubFix
             }
         }
 
-        private static void FixTVShowSubTitles(DirectoryInfo directoryInfo, string extension)
-        {
-            var tvShows = directoryInfo.GetFilesByExtensions(".mkv", ".mp4", ".avi", ".m4v");
-            if (tvShows.Count() < 1)
-            {
-                var subDirs = directoryInfo.GetDirectories();
-                if (subDirs.Length == 0)
-                {
-                    Console.WriteLine(directoryInfo.FullName + " has zero files");
-                    return;
-                }
-                foreach (var subDir in subDirs)
-                {
-                    FixTVShowSubTitles(subDir, extension);
-                }
-                return;
-            }
-
-            foreach (var tvShow in tvShows)
-            {
-                SearchLanguage(directoryInfo, tvShows.Count(), tvShow, "English", "Eng", "en", "srt");
-                SearchLanguage(directoryInfo, tvShows.Count(), tvShow, "English", "Eng", "en", "idx");
-                SearchLanguage(directoryInfo, tvShows.Count(), tvShow, "English", "Eng", "en", "sub");
-                foreach (var languageCode in LanguageCodes)
-                {
-                    SearchLanguage(directoryInfo, tvShows.Count(), tvShow, languageCode.Item1, null, languageCode.Item2, "srt");
-                }
-            }
-
-        }
-
         private static void SearchLanguage(DirectoryInfo directoryInfo, int tvShowsCount, FileInfo tvShow, string search, string altSearch, string code, string extension)
         {
             var subTitleDestination = tvShow.FullName.Substring(0, tvShow.FullName.Length - tvShow.Extension.Length) + "." + code + "." + extension;
@@ -1441,6 +1453,68 @@ namespace PlexSubFix
                         }
                     }
 
+                }
+            }
+        }
+
+        private static void SearchLanguage(DirectoryInfo directoryInfo, int tvShowsCount, FileInfo tvShow, List<Regex> search, string code, string extension)
+        {
+            var subTitleDestination = tvShow.FullName.Substring(0, tvShow.FullName.Length - tvShow.Extension.Length) + "." + code + "." + extension;
+
+            if (File.Exists(subTitleDestination))
+            {
+                return;
+            }
+
+            var match = Regex.Match(tvShow.Name, @"[Ss](\d+)[Ee](\d+)");
+            if (!match.Success)
+            {
+                return;
+            }
+
+            //Case 1: Subtitles are named with S0E0 pattern
+            var subTitlesFiles = directoryInfo.GetFiles("*" + match.Groups[0].Value + "*" + "." + extension, SearchOption.AllDirectories).ToList();
+            subTitlesFiles = subTitlesFiles.Where(p => search.Any(s => s.IsMatch(p.Name.ToLowerInvariant()))).ToList();
+
+            subTitlesFiles = subTitlesFiles.Distinct(new FileInfoComparer()).ToList();
+            if (subTitlesFiles.Count > 0)
+            {
+                RenameSubTitlesBasedOnLanguage(tvShow, code, subTitlesFiles);
+                return;
+            }
+
+            //Case 2: The folder only has one episode. All subtitles are for that
+            if (tvShowsCount == 1)
+            {
+                subTitlesFiles = directoryInfo.GetFiles("*." + extension, SearchOption.AllDirectories).Where(p => p.Length > minFileSize).OrderBy(p => p.Length).ToList();
+
+                subTitlesFiles = subTitlesFiles.Where(p => search.Any(s => s.IsMatch(p.Name.ToLowerInvariant()))).ToList();
+
+                subTitlesFiles = subTitlesFiles.Distinct(new FileInfoComparer()).ToList();
+                if (subTitlesFiles.Count > 0)
+                {
+                    RenameSubTitlesBasedOnLanguage(tvShow, code, subTitlesFiles);
+                    return;
+                }
+            }
+
+            //Case 3: multiple tv shows, subtitles not named with S0E0 pattern. They are in a subfolder with s0e0 pattern.
+            if (tvShowsCount > 1)
+            {
+                var subdirs = directoryInfo.GetDirectories(tvShow.Name.Replace(tvShow.Extension, ""), SearchOption.AllDirectories);
+                if (subdirs.Length == 1)
+                {
+                    var subdir = subdirs.First();
+
+                    subTitlesFiles = subdir.GetFiles("*." + extension, SearchOption.AllDirectories).Where(p => p.Length > minFileSize).OrderBy(p => p.Length).ToList();
+                    subTitlesFiles = subTitlesFiles.Where(p => search.Any(s => s.IsMatch(p.Name.ToLowerInvariant()))).ToList();
+
+                    subTitlesFiles = subTitlesFiles.Distinct(new FileInfoComparer()).ToList();
+                    if (subTitlesFiles.Count > 0)
+                    {
+                        RenameSubTitlesBasedOnLanguage(tvShow, code, subTitlesFiles);
+                        return;
+                    }
                 }
             }
         }

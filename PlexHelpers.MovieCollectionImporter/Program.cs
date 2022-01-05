@@ -179,7 +179,7 @@ namespace PlexHelpers.MovieCollectionImporter
                     url.Query = movieRequest.ToUrlString();
 
 
-                    Console.WriteLine(plexMovie.MetadataId);
+                    Console.WriteLine("Adding {0} to {1}", movieToImport.MovieTitle, targetPlexCollection.MediaContainer.Title2);
 
                     List<string> existingCollections = new List<string>();
 
@@ -229,7 +229,6 @@ namespace PlexHelpers.MovieCollectionImporter
                             response.EnsureSuccessStatusCode();
                         }
                     }
-                    Console.WriteLine("Added {0} to {1}", movieToImport.MovieTitle, targetPlexCollection.MediaContainer.Title2);
 
                 }
                 catch (Exception ex)

@@ -13,7 +13,7 @@ namespace PlexHelpers.PosterExport
     {
         private static bool CanMove = true;
         private static List<PlexMovie> _plexMovies;
-        private static string _targetDrive = "V";
+        private static string _targetDrive = "B";
 
         static void Main(string[] args)
         {

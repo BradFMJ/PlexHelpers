@@ -626,6 +626,10 @@ namespace PlexHelpers.Common
             {
                 di = new DirectoryInfo("P:\\Media\\TV Shows\\" + di.Name);
             }
+            if (path.StartsWith("C:\\Share\\PlexNewTV4"))
+            {
+                di = new DirectoryInfo("A:\\Media\\TV Shows\\" + di.Name);
+            }
             if (path.StartsWith("C:\\PlexNewTV2"))
             {
                 di = new DirectoryInfo("I:\\Media\\TV Shows\\" + di.Name);

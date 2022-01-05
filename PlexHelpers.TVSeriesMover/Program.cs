@@ -13,7 +13,7 @@ namespace PlexHelpers.TVSeriesMover
     {
         private static bool CanMove = true;
         private static bool CanDelete = true;
-        private static string _targetDrive = "S";
+        private static string _targetDrive = "Y";
         private static string _drivePath = @":\Media\TV Shows";
 
         private static List<TVShow> _tvShows;
