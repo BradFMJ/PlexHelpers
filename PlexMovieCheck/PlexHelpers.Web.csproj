@@ -71,6 +71,7 @@
     <Content Include="Global.asax" />
     <Content Include="imdb-list.js" />
     <Content Include="imdb.js" />
+    <Content Include="index.html" />
     <Content Include="rarbg.asmx" />
     <Content Include="imdb.asmx" />
     <Content Include="rarbg.js" />
@@ -127,7 +128,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>51375</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://localhost:44342/</IISUrl>
+          <IISUrl>http://localhost:44342/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

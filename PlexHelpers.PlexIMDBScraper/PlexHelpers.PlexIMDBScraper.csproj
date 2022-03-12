@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{193B2353-B613-4042-88AA-00AFD13DEA39}</ProjectGuid>
+    <ProjectGuid>{630CA548-3A85-4B58-AFFE-E404BE52948C}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>PlexHelpers.MovieCollectionFixer</RootNamespace>
-    <AssemblyName>PlexHelpers.MovieCollectionFixer</AssemblyName>
+    <RootNamespace>PlexHelpers.PlexIMDBScraper</RootNamespace>
+    <AssemblyName>PlexHelpers.PlexIMDBScraper</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -58,6 +58,11 @@
       <Project>{2d3631a4-f5f1-4410-9194-7e29f6f14a90}</Project>
       <Name>PlexHelpers.Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="plex-key.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

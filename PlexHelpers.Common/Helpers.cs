@@ -4,12 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using PlexHelpers.Common.Medusa;
+using System.Linq;
 
 namespace PlexHelpers.Common
 {
     public static class Helpers
     {
-        public static List<string> VideoFileExtensions = new List<string>{ ".mkv", ".mp4", ".avi", ".m4v", ".mpeg", ".mpg", ".wmv" };
+        public static List<string> VideoFileExtensions = new List<string> { ".mkv", ".mp4", ".avi", ".m4v", ".mpeg", ".mpg", ".wmv" };
 
         public static List<PlexMetadDataItem> ReadPlexTVShowCSV(string filePath)
         {
@@ -43,7 +44,7 @@ namespace PlexHelpers.Common
             return newTVShows;
         }
 
-        public static List<PlexMovie> ReadCSV(string filePath)
+        public static List<PlexMovie> ReadPlexMovieCSV(string filePath, List<PlexIMDBMap> plexMaps)
         {
             var newMovies = new List<PlexMovie>();
 
@@ -141,10 +142,36 @@ namespace PlexHelpers.Common
                             {
                                 plexMovie.TMDB = parseUri.Host;
                             }
+                            if (parseUri.Scheme == "plex")
+                            {
+                                plexMovie.Plex = parseUri.PathAndQuery.Replace(@"/", "");
+                            }
                         }
                         else if (parts[11].StartsWith("tt"))
                         {
                             plexMovie.IMDB = parts[11];
+                        }
+
+                        if(plexMovie.Guid == "plex://movie/5d776f37fb0d55001f5da6b5")
+                        {
+                            int z = 0;
+                        }
+
+                        var map = plexMaps.FirstOrDefault(p => p.PlexGuid == plexMovie.Guid);
+                        if (map != null)
+                        {
+                            if (!string.IsNullOrWhiteSpace(map.IMDB))
+                            {
+                                plexMovie.IMDB = map.IMDB;
+                            }
+                            if (!string.IsNullOrWhiteSpace(map.TMDB))
+                            {
+                                plexMovie.TMDB = map.TMDB;
+                            }
+                            if (!string.IsNullOrWhiteSpace(map.Plex))
+                            {
+                                plexMovie.Plex = map.Plex;
+                            }
                         }
                     }
 
@@ -157,6 +184,60 @@ namespace PlexHelpers.Common
             }
 
             return newMovies;
+        }
+
+        public static List<PlexIMDBMap> ReadPlexMapCSV(string filePath)
+        {
+            var maps = new List<PlexIMDBMap>();
+
+            var lines = File.ReadAllLines(filePath);
+
+            for (var i = 0; i < lines.Length; i++)
+            {
+                TextFieldParser parser = new TextFieldParser(new StringReader(lines[i]));
+                parser.HasFieldsEnclosedInQuotes = true;
+                parser.SetDelimiters(",");
+
+                string[] parts = null;
+
+                while (!parser.EndOfData)
+                {
+                    parts = parser.ReadFields();
+                }
+
+                try
+                {
+                    var map = new PlexIMDBMap
+                    {
+                        PlexGuid = parts[0],
+                        Plex = parts[1],
+                        IMDB = parts[2],
+                        TMDB = parts[3],
+                        TVDB = parts[4]
+                    };
+
+
+                    maps.Add(map);
+                }
+                catch (Exception e)
+                {
+                    int u = 0;
+                }
+            }
+
+            return maps;
+        }
+
+        public static void WritePlexMapCSV(string filePath, List<PlexIMDBMap> maps)
+        {
+            var lines = new List<string>();
+
+            foreach (var map in maps)
+            {
+                lines.Add(Helpers.EscapeCsvField(map.PlexGuid) + "," + Helpers.EscapeCsvField(map.Plex) + "," + Helpers.EscapeCsvField(map.IMDB) + "," + Helpers.EscapeCsvField(map.TMDB) + "," + Helpers.EscapeCsvField(map.TVDB));
+            }
+
+            File.WriteAllLines(filePath, lines);
         }
 
         public static List<PlexCollectionMovie> ReadCollectionCSV(string filePath)
@@ -308,6 +389,10 @@ namespace PlexHelpers.Common
 
         public static string EscapeCsvField(string data)
         {
+            if (data == null)
+            {
+                data = String.Empty;
+            }
             // CSV rules: http://en.wikipedia.org/wiki/Comma-separated_values#Basic_rules
             // From the rules:
             // 1. if the data has quote, escape the quote in the data
@@ -332,7 +417,7 @@ namespace PlexHelpers.Common
             return data;
         }
 
-        public static List<TVShow> ReadTVShowCSV(string filePath)
+        public static List<TVShow> ReadMedusaTVShowCSV(string filePath)
         {
             var newTVShows = new List<TVShow>();
 
@@ -465,7 +550,7 @@ namespace PlexHelpers.Common
             return newTVShows;
         }
 
-        public static List<Episode> ReadEpisodeCSV(string filePath)
+        public static List<Episode> ReadMedusaEpisodeCSV(string filePath)
         {
             var newEpisodes = new List<Episode>();
 
@@ -601,7 +686,7 @@ namespace PlexHelpers.Common
 
             return newEpisodes;
         }
-        
+
         public static string GetIndexerFriendlyName(int indexerId)
         {
             switch (indexerId)
@@ -618,6 +703,7 @@ namespace PlexHelpers.Common
             }
 
         }
+
         public static DirectoryInfo SeriesFolderNameFixer(string path)
         {
             DirectoryInfo di = new DirectoryInfo(path);

@@ -49,6 +49,7 @@
     <Compile Include="Medusa\TVShow.cs" />
     <Compile Include="Models\PlexCollectionMovie.cs" />
     <Compile Include="Models\PlexCollectionTVShow.cs" />
+    <Compile Include="Models\PlexIMDBMap.cs" />
     <Compile Include="Models\PlexMetadDataItem.cs" />
     <Compile Include="Models\PlexMovie.cs" />
     <Compile Include="Plex\CollectionAddRequest.cs" />

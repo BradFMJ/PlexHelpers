@@ -27,5 +27,6 @@ namespace PlexHelpers.Common.Models
         public string MovieFolderName { get; set; }
         public int MetadataId { get; set; }
         public int Duration { get; set; }
+        public string Plex { get; set; }
     }
 }
