@@ -20,7 +20,7 @@ namespace PlexHelpers.InPlaceProcessor
 
         static void Main(string[] args)
         {
-            _plexMovies = Helpers.ReadCSV("C:\\imdb\\rarbgcheck.csv");
+            _plexMovies = Helpers.ReadPlexMovieCSV("C:\\imdb\\plex-movies.csv", Helpers.ReadPlexMapCSV("C:\\imdb\\plex-map.csv"));
 
             FileInfo fileInfo;
 

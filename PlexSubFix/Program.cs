@@ -312,15 +312,15 @@ namespace PlexSubFix
             //CheckFolder(@"U:\Media\Movies");
             //CheckFolder(@"T:\Media\Movies");
 
-            CleanCompletedFolder(@"C:\Users\Brad\Downloads\Newshosting");
-            CleanCompletedFolder(@"H:\Media\Completed");
+            //CleanCompletedFolder(@"C:\Users\Brad\Downloads\Newshosting");
+            CleanCompletedFolder(@"C:\Share\H\Completed");
             //CleanCompletedFolder(@"H:\Media\Backlog");
 
             //FixMovieSubTitles(@"U:\Media\Movies");
             //FixMovieSubTitles(@"J:\Media\Movies");
-            FixMovieSubTitles(@"H:\Media\Movies");
-            FixMovieSubTitles(@"H:\Media\Completed");
-            FixTvShowSubTitles(@"H:\Media\Completed");
+            FixMovieSubTitles(@"C:\Share\H\Movies");
+            FixMovieSubTitles(@"C:\Share\H\Completed");
+            FixTvShowSubTitles(@"C:\Share\H\Completed");
 
 
             //FixTvShowNames(@"C:\Users\Brad\Downloads\Newshosting");

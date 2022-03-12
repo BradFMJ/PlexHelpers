@@ -24,8 +24,8 @@ namespace PlexHelpers.TVSeriesSubtitlesCheck
             });
             _client.BaseAddress = new Uri("http://192.168.1.207:8081/home/");
 
-            _tvShows = Helpers.ReadTVShowCSV("C:\\imdb\\medusa_tvshows.csv");
-            _episodes = Helpers.ReadEpisodeCSV("C:\\imdb\\medusa_episodes.csv");
+            _tvShows = Helpers.ReadMedusaTVShowCSV("C:\\imdb\\medusa_tvshows.csv");
+            _episodes = Helpers.ReadMedusaEpisodeCSV("C:\\imdb\\medusa_episodes.csv");
 
             foreach (var tvShow in _tvShows)
             {

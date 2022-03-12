@@ -33,7 +33,7 @@ namespace PlexHelpers.MovieCollectionImporter
 
             HttpClient httClient = new HttpClient();
 
-            _plexMovies = Helpers.ReadCSV("C:\\imdb\\rarbgcheck.csv");
+            _plexMovies = Helpers.ReadPlexMovieCSV("C:\\imdb\\plex-movies.csv", Helpers.ReadPlexMapCSV("C:\\imdb\\plex-map.csv"));
 
             //_plexImportListMovies = Helpers.ReadCollectionCSV("C:\\imdb\\collections.csv");
             _plexImportListMovies = Helpers.ReadCollectionCSV(_plexCollectionMovieImportListPath);
