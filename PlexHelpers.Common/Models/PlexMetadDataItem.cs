@@ -52,6 +52,7 @@ namespace PlexHelpers.Common.Models
         public int ResourcesChangedAt; //45
         public int Remote; //46
 
+        public string IMDB; //Not mapped to sql query
 
         public static PlexMetadDataItem Parse(string[] parts)
         {

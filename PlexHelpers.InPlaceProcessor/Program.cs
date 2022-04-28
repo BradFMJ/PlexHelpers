@@ -16,7 +16,8 @@ namespace PlexHelpers.InPlaceProcessor
         private static string _targetDrive = "B";
         private static string _tmdbDrive = "J";
         private static string _unmatchedDrive = "J";
-        private static string _drivePath = @":\Media\Movies";
+        private static string _sourceDrivePath = @":\Media\Movies";
+        private static string _targetDrivePath = @":\Share\Movies\1080P";
 
         static void Main(string[] args)
         {
@@ -24,7 +25,7 @@ namespace PlexHelpers.InPlaceProcessor
 
             FileInfo fileInfo;
 
-            var sourceRootDir = _sourceDrive + _drivePath;
+            var sourceRootDir = _sourceDrive + _sourceDrivePath;
 
             //filter out only movies that are in sourceRootDir. Also, filter out movies that are not in their own folders (sitting in the root directory)
             _plexMovies = _plexMovies.Where(p => p.FullFileName.StartsWith(sourceRootDir) && p.FileInfo.Directory.FullName != sourceRootDir).ToList();
@@ -48,7 +49,7 @@ namespace PlexHelpers.InPlaceProcessor
                     {
                         //Check for incorrect folder names
                         //var sourceDirectory = _sourceDrive + _drivePath + "\\" + plexMovie.MovieFolderName;
-                        var targetDirectory = _targetDrive + _drivePath + "\\" + plexMovie.MovieFolderName;
+                        var targetDirectory = _targetDrive + _targetDrivePath + "\\" + plexMovie.MovieFolderName;
 
                         if (string.Equals(targetDirectory, plexMovie.FileInfo.DirectoryName, StringComparison.InvariantCultureIgnoreCase))
                         {
@@ -101,7 +102,7 @@ namespace PlexHelpers.InPlaceProcessor
                     {
                         DriveInfo driveInfo = new DriveInfo(_tmdbDrive);
 
-                        var targetDirectory = _tmdbDrive + _drivePath + "\\" + plexMovie.MovieFolderName;
+                        var targetDirectory = _tmdbDrive + _targetDrivePath + "\\" + plexMovie.MovieFolderName;
 
                         if (string.Equals(targetDirectory, plexMovie.FileInfo.DirectoryName, StringComparison.InvariantCultureIgnoreCase))
                         {
@@ -144,7 +145,7 @@ namespace PlexHelpers.InPlaceProcessor
                     {
                         DriveInfo driveInfo = new DriveInfo(_unmatchedDrive);
 
-                        var targetDirectory = _unmatchedDrive + _drivePath + "\\" + plexMovie.MovieFolderName;
+                        var targetDirectory = _unmatchedDrive + _targetDrivePath + "\\" + plexMovie.MovieFolderName;
 
                         if(string.Equals(targetDirectory, plexMovie.FileInfo.DirectoryName, StringComparison.InvariantCultureIgnoreCase))
                         {

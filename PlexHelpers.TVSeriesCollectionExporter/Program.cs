@@ -38,7 +38,8 @@ namespace PlexHelpers.TVSeriesCollectionExporter
                 Scheme = "https",
                 Host = _host,
                 Port = port,
-                Path = "/library/sections/4/collections",
+                Path = "/library/sections/2/collections",
+                //Path = "/library/sections/4/collections",//TV Shows 4k
                 Query = collectionListRequest.ToUrlString()
             };
 

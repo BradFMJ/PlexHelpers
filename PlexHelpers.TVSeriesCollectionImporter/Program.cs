@@ -34,7 +34,7 @@ namespace PlexHelpers.TVSeriesCollectionImporter
 
             HttpClient httClient = new HttpClient();
 
-            _plexTVShows = Helpers.ReadPlexTVShowCSV("C:\\imdb\\plex-tv-shows.csv");
+            _plexTVShows = Helpers.ReadPlexMetadDataItem("C:\\imdb\\plex-tv-shows.csv");
 
             _plexImportTVShows = Helpers.ReadTVShowCollectionCSV(_plexCollectionTVShowImportListPath);
 
@@ -216,7 +216,8 @@ namespace PlexHelpers.TVSeriesCollectionImporter
                         Scheme = "https",
                         Host = host,
                         Port = port,
-                        Path = "/library/sections/4/all",
+                        Path = "/library/sections/2/all",
+                        //Path = "/library/sections/4/all",
                         Query = collectionAddRequest.ToUrlString()
                     };
                     

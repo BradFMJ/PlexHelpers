@@ -12,7 +12,7 @@ namespace PlexHelpers.Common
     {
         public static List<string> VideoFileExtensions = new List<string> { ".mkv", ".mp4", ".avi", ".m4v", ".mpeg", ".mpg", ".wmv" };
 
-        public static List<PlexMetadDataItem> ReadPlexTVShowCSV(string filePath)
+        public static List<PlexMetadDataItem> ReadPlexMetadDataItem(string filePath)
         {
             var newTVShows = new List<PlexMetadDataItem>();
 
@@ -152,11 +152,6 @@ namespace PlexHelpers.Common
                             plexMovie.IMDB = parts[11];
                         }
 
-                        if(plexMovie.Guid == "plex://movie/5d776f37fb0d55001f5da6b5")
-                        {
-                            int z = 0;
-                        }
-
                         var map = plexMaps.FirstOrDefault(p => p.PlexGuid == plexMovie.Guid);
                         if (map != null)
                         {
@@ -172,6 +167,11 @@ namespace PlexHelpers.Common
                             {
                                 plexMovie.Plex = map.Plex;
                             }
+                        }
+
+                        if(!string.IsNullOrWhiteSpace(plexMovie.IMDB))
+                        {
+                            plexMovie.MovieFolderName += " {" + plexMovie.IMDB + "}";
                         }
                     }
 
