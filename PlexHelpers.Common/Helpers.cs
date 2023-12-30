@@ -708,7 +708,7 @@ namespace PlexHelpers.Common
         {
             DirectoryInfo di = new DirectoryInfo(path);
 
-            if (path.StartsWith("C:\\PlexNewTV3"))
+            if (path.StartsWith("C:\\Share\\PlexNewTV3"))
             {
                 di = new DirectoryInfo("P:\\Media\\TV Shows\\" + di.Name);
             }
@@ -716,13 +716,17 @@ namespace PlexHelpers.Common
             {
                 di = new DirectoryInfo("A:\\Media\\TV Shows\\" + di.Name);
             }
-            if (path.StartsWith("C:\\PlexNewTV2"))
+            if (path.StartsWith("C:\\Share\\PlexNewTV2"))
             {
                 di = new DirectoryInfo("I:\\Media\\TV Shows\\" + di.Name);
             }
-            if (path.StartsWith("C:\\Media3\\TV Shows"))
+            if (path.StartsWith("C:\\Share\\PlexNewTV1"))
             {
                 di = new DirectoryInfo("K:\\Media\\TV Shows\\" + di.Name);
+            }
+            if (path.StartsWith("C:\\Media\\TV Shows"))
+            {
+                di = new DirectoryInfo("H:\\Media\\TV Shows\\" + di.Name);
             }
 
             return di;

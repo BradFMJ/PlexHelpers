@@ -91,6 +91,7 @@ namespace PlexSubFix
                 new Regex("^eng\\.srt$", RegexOptions.Compiled),
                 new Regex("^english.*\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_english\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,english.*\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_eng\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_und\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.eng\\.srt$", RegexOptions.Compiled)
@@ -313,14 +314,20 @@ namespace PlexSubFix
             //CheckFolder(@"T:\Media\Movies");
 
             //CleanCompletedFolder(@"C:\Users\Brad\Downloads\Newshosting");
-            CleanCompletedFolder(@"C:\Share\H\Completed");
+            // FixTvShowNamesOneOff(new DirectoryInfo(@"C:\Share\Downloads\Completed\Liberty's Kids (2002)\Season 01"));
+            CleanCompletedFolder(@"C:\Share\Downloads\Completed");
+            CleanCompletedFolder(@"C:\Share\Downloads\Upload");
+            CleanCompletedFolder(@"C:\Share\Downloads\Movies");
+            CleanCompletedFolder(@"C:\Share\H\Upload");
+            //CleanCompletedFolder(@"H:\Media\Music");
+            //CleanCompletedFolder(@"H:\Media\Movies");
             //CleanCompletedFolder(@"H:\Media\Backlog");
 
             //FixMovieSubTitles(@"U:\Media\Movies");
             //FixMovieSubTitles(@"J:\Media\Movies");
-            FixMovieSubTitles(@"C:\Share\H\Movies");
-            FixMovieSubTitles(@"C:\Share\H\Completed");
-            FixTvShowSubTitles(@"C:\Share\H\Completed");
+            FixMovieSubTitles(@"C:\Share\Downloads\Movies");
+            FixMovieSubTitles(@"C:\Share\Downloads\Completed");
+            FixTvShowSubTitles(@"C:\Share\Downloads\Completed");
 
 
             //FixTvShowNames(@"C:\Users\Brad\Downloads\Newshosting");
@@ -411,7 +418,11 @@ namespace PlexSubFix
                 }
             }
 
-            DeleteEmptyFolders(dInfo);
+            var subDirs = dInfo.GetDirectories();
+            foreach (var subDir in subDirs)
+            {
+                DeleteEmptyFolders(subDir);
+            }
         }
 
         public static void FixTvShowNames(string path)
@@ -455,23 +466,8 @@ namespace PlexSubFix
                 //    {
                 //        continue;
                 //    }
-
-                //    var badChar = tvShow.Name.Substring(match.Groups[0].Value.Length, 1);
-
-                //    if (badChar == " " || badChar == ".")
-                //    {
-                //        continue;
-                //    }
-                //    if (badChar == "E")
-                //    {
-                //        badChar = tvShow.Name.Substring(match.Groups[0].Value.Length + 1, 1);
-                //        var arr = new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
-                //        if (arr.Contains(badChar))
-                //        {
-                //            continue;
-                //        }
-                //    }
-                //    string destination = string.Format("S{0}E{1} ", season, episode);
+                //    int episodeInt = int.Parse(episode) + 8;
+                //    string destination = string.Format("S{0}E{1} ", "01", episodeInt.ToString());
                 //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
 
                 //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
@@ -1063,6 +1059,68 @@ namespace PlexSubFix
             }
         }
 
+        private static void FixTvShowNamesOneOff(DirectoryInfo directoryInfo)
+        {
+            var tvShows = directoryInfo.GetFilesByExtensions(VideoFileExtensions.ToArray());
+
+            Match match;
+
+            foreach (var tvShow in tvShows)
+            {
+
+                match = Regex.Match(tvShow.Name, @"S01S01[Ee](\d+)");
+                if (match.Success)
+                {
+                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
+                    if (!folderMatch.Success)
+                    {
+                        continue;
+                    }
+                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+
+                    string season = match.Groups[1].Value.PadLeft(2, '0');
+                    string episode = match.Groups[1].Value.PadLeft(2, '0');
+
+                    //if (folderSeason != season)
+                    //{
+                    //    continue;
+                    //}
+                    //int episodeInt = int.Parse(episode);
+                    //episodeInt -= 21;
+
+
+                    string destination = string.Format("S{0}E{1}", folderSeason, episode.PadLeft(2, '0'));
+                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                    continue;
+                }
+                //match = Regex.Match(tvShow.Name, @" Part (\d+)");
+                //if (match.Success)
+                //{
+                //    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
+                //    if (!folderMatch.Success)
+                //    {
+                //        continue;
+                //    }
+                //    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[1].Value.PadLeft(2, '0');
+
+
+                //    int episodeInt = int.Parse(episode);
+                //    string destination = string.Format(" S{0}E{1}", folderSeason, episodeInt.ToString().PadLeft(2, '0'));
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+            }
+        }
+
         public static void FixTvShowSubTitles(string path)
         {
             DirectoryInfo dInfo = new DirectoryInfo(path);
@@ -1616,7 +1674,7 @@ namespace PlexSubFix
             {
                 throw new ArgumentNullException("extensions");
             }
-            IEnumerable<FileInfo> files = dir.EnumerateFiles();
+             IEnumerable<FileInfo> files = dir.EnumerateFiles();
             return files.Where(f => extensions.Contains(f.Extension.ToLower()));
         }
     }
