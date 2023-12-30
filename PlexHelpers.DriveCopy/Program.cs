@@ -16,7 +16,8 @@ namespace PlexHelpers.DriveCopy
 
         static void Main(string[] args)
         {
-            _plexMovies = Helpers.ReadPlexMovieCSV("C:\\imdb\\plex-movies.csv", Helpers.ReadPlexMapCSV("C:\\imdb\\plex-map.csv"));
+           // _plexMovies = Helpers.ReadPlexMovieCSV("C:\\imdb\\plex-movies.csv", Helpers.ReadPlexMapCSV("C:\\imdb\\plex-map.csv"));
+            _plexMovies = Helpers.ReadPlexMovieCSV("C:\\Share\\H\\plex-movies.csv");
 
             FileInfo fileInfo;
 

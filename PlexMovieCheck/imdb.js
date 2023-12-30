@@ -19,11 +19,27 @@ javascript: (function () {
             $this.css("background-color", "#cccccc");
             return;
         }
+        if (thisText.indexOf("(TV Series Short)") > -1) {
+            $this.css("background-color", "#cccccc");
+            return;
+        }
         if (thisText.indexOf("(TV Mini-Series short)") > -1) {
             $this.css("background-color", "#cccccc");
             return;
         }
         if (thisText.indexOf("(TV Mini-Series)") > -1) {
+            $this.css("background-color", "#cccccc");
+            return;
+        }
+        if (thisText.indexOf("(TV Mini Series)") > -1) {
+            $this.css("background-color", "#cccccc");
+            return;
+        }
+        if (thisText.indexOf("(TV Series documentary)") > -1) {
+            $this.css("background-color", "#cccccc");
+            return;
+        }
+        if (thisText.indexOf("(Music Video short)") > -1) {
             $this.css("background-color", "#cccccc");
             return;
         }

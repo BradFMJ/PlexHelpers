@@ -17,8 +17,11 @@ namespace PlexHelpers.MovieCollectionMerge
 
         static void Main(string[] args)
         {
-            _sourcePlexMovies = Helpers.ReadPlexMovieCSV("C:\\imdb\\plex-movies.csv", Helpers.ReadPlexMapCSV("C:\\imdb\\plex-map.csv"));
-            _targetPlexMovies = Helpers.ReadPlexMovieCSV("C:\\imdb\\NKplex2.csv", Helpers.ReadPlexMapCSV("C:\\imdb\\plex-map.csv"));
+            //_sourcePlexMovies = Helpers.ReadPlexMovieCSV("C:\\imdb\\plex-movies.csv", Helpers.ReadPlexMapCSV("C:\\imdb\\plex-map.csv"));
+            //_targetPlexMovies = Helpers.ReadPlexMovieCSV("C:\\imdb\\NKplex2.csv", Helpers.ReadPlexMapCSV("C:\\imdb\\plex-map.csv"));
+
+            _sourcePlexMovies = Helpers.ReadPlexMovieCSV("C:\\imdb\\plex-movies.csv");
+            _targetPlexMovies = Helpers.ReadPlexMovieCSV("C:\\Share\\H\\plex-movies.csv");
 
             var sourceRootDir = "J" + _drivePath;
 

@@ -33,6 +33,8 @@ namespace PlexHelpers.MovieCollectionRestore
             _plexMovies = Helpers.ReadPlexMetadDataItem("C:\\imdb\\plex-movies-list.csv");
             _oldPlexMovies = Helpers.ReadPlexMetadDataItem("C:\\imdb\\plex-movies-list.old.csv");
 
+            int counter = 0;
+
             //get IMDB for new movies
             var plexMaps = Helpers.ReadPlexMapCSV("C:\\imdb\\plex-map.csv");
             foreach (var plexMovie in _plexMovies)
@@ -45,7 +47,13 @@ namespace PlexHelpers.MovieCollectionRestore
                         plexMovie.IMDB = map.IMDB;
                     }
                 }
+                if (string.IsNullOrWhiteSpace(plexMovie.IMDB))
+                {
+                    counter++;
+                }
             }
+
+            counter = 0;
 
             //get IMDB for old movies
             Uri parseUri;
@@ -63,28 +71,47 @@ namespace PlexHelpers.MovieCollectionRestore
                 {
                     plexMovie.IMDB = plexMovie.Guid;
                 }
+                if (string.IsNullOrWhiteSpace(plexMovie.IMDB))
+                {
+                    counter++;
+                }
             }
+            counter = 0;
 
-
-            foreach (var oldPlexTVShows in _oldPlexMovies)
+            foreach (var oldPlexMovie in _oldPlexMovies)
             {
                 PlexMetadDataItem plexMovie = null;
 
-                var found = _plexMovies.Where(p => p.IMDB == oldPlexTVShows.IMDB).ToList();
+                var found = _plexMovies.Where(p => p.IMDB == oldPlexMovie.IMDB).ToList();
+                if (found.Count == 0)
+                {
+                    found = _plexMovies.Where(p => p.Title == oldPlexMovie.Title && p.Year == oldPlexMovie.Year).ToList();
+                }
                 if (found.Count == 1)
                 {
+                    counter++;
+                    //continue;
                     plexMovie = found.First();
 
-                    if (string.IsNullOrWhiteSpace(oldPlexTVShows.TagsCollection))
+                    if (string.IsNullOrWhiteSpace(oldPlexMovie.TagsCollection))
                     {
                         continue;
                     }
 
+                    var oldCollections = oldPlexMovie.TagsCollection.Split('|').ToList();
+                    var collections = plexMovie.TagsCollection.Split('|').ToList();
+                    var missingCollections = oldCollections.Except(collections).Distinct().ToList();
+                    missingCollections.Remove("In Theaters");
+                    if (!missingCollections.Any())
+                    {
+                        continue;
+                    }
+                    oldCollections.AddRange(collections);
                     var collectionAddRequest = new CollectionAddRequest
                     {
                         PlexToken = plexToken,
                         MetadataId = plexMovie.Id,
-                        Collections = oldPlexTVShows.TagsCollection.Split('|').ToList(),
+                        Collections = oldCollections.Distinct().ToList(),
                         Type = 1
                     };
 
@@ -110,9 +137,11 @@ namespace PlexHelpers.MovieCollectionRestore
                             response.EnsureSuccessStatusCode();
                         }
                     }
-                    Console.WriteLine("Added {0} to {1}", plexMovie.Title, collectionAddRequest.Collections);
+                    Console.WriteLine("Added {0} to {1}", plexMovie.Title, string.Join(",", collectionAddRequest.Collections));
                 }
             }
+
+            counter = 0;
         }
     }
 }

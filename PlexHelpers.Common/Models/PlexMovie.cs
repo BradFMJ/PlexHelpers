@@ -18,15 +18,16 @@ namespace PlexHelpers.Common.Models
         public string Container { get; set; }
         public string VideoCodec { get; set; }
         public string AudioCodec { get; set; }
-        public string IMDB { get; set; }
         public string FullFileName { get; set; }
         public FileInfo FileInfo { get; set; }
         public Uri Uri { get; set; }
         public string Hash { get; set; }
-        public string TMDB { get; set; }
         public string MovieFolderName { get; set; }
         public int MetadataId { get; set; }
         public int Duration { get; set; }
+        public string IMDB { get; set; }
+        public string TMDB { get; set; }
+        public string TVDB { get; set; }
         public string Plex { get; set; }
     }
 }

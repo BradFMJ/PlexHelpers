@@ -33,7 +33,8 @@ namespace PlexHelpers.MovieCollectionImporter
 
             HttpClient httClient = new HttpClient();
 
-            _plexMovies = Helpers.ReadPlexMovieCSV("C:\\imdb\\plex-movies.csv", Helpers.ReadPlexMapCSV("C:\\imdb\\plex-map.csv"));
+            //_plexMovies = Helpers.ReadPlexMovieCSV("C:\\imdb\\plex-movies.csv", Helpers.ReadPlexMapCSV("C:\\imdb\\plex-map.csv"));
+            _plexMovies = Helpers.ReadPlexMovieCSV("C:\\Share\\H\\plex-movies.csv");
 
             //_plexImportListMovies = Helpers.ReadCollectionCSV("C:\\imdb\\collections.csv");
             _plexImportListMovies = Helpers.ReadCollectionCSV(_plexCollectionMovieImportListPath);
@@ -67,7 +68,7 @@ namespace PlexHelpers.MovieCollectionImporter
                             Console.WriteLine("No Movie Matches Found In Lookup For {0}", movieToImport.MovieTitle);
                         }
                     }
-                    else if (!string.IsNullOrWhiteSpace(movieToImport.TMDB))
+                    if(plexMovie == null && !string.IsNullOrWhiteSpace(movieToImport.TMDB))
                     {
                         var found = _plexMovies.Where(p => p.TMDB == movieToImport.TMDB).ToList();
                         if (found.Count == 1)
@@ -83,7 +84,7 @@ namespace PlexHelpers.MovieCollectionImporter
                             Console.WriteLine("No Movie Matches Found In Lookup For {0}", movieToImport.MovieTitle);
                         }
                     }
-                    else
+                    if (plexMovie == null)
                     {
                         var found = _plexMovies.Where(p => string.Equals(p.Title, movieToImport.MovieTitle.Replace(",", ""), StringComparison.InvariantCultureIgnoreCase)).ToList();
                         if (found.Count == 1)
@@ -131,18 +132,18 @@ namespace PlexHelpers.MovieCollectionImporter
 
                     #region Match Collection Import Movie to existing Plex Collection
 
-                    if (!string.IsNullOrWhiteSpace(movieToImport.CollectionKey))
+                    //if (!string.IsNullOrWhiteSpace(movieToImport.CollectionKey))
+                    //{
+                    //    targetPlexCollection = _plexCollections.SingleOrDefault(p => p.MediaContainer.Key == movieToImport.CollectionKey);
+                    //}
+                    //else
+                    //{
+                    targetPlexCollection = _plexCollections.SingleOrDefault(p => p.MediaContainer.Title2 == movieToImport.CollectionName);
+                    if (targetPlexCollection != null)
                     {
-                        targetPlexCollection = _plexCollections.SingleOrDefault(p => p.MediaContainer.Key == movieToImport.CollectionKey);
+                        movieToImport.CollectionKey = targetPlexCollection.MediaContainer.Key;
                     }
-                    else
-                    {
-                        targetPlexCollection = _plexCollections.SingleOrDefault(p => p.MediaContainer.Title2 == movieToImport.CollectionName);
-                        if (targetPlexCollection != null)
-                        {
-                            movieToImport.CollectionKey = targetPlexCollection.MediaContainer.Key;
-                        }
-                    }
+                    // }
 
                     #endregion
 
@@ -194,9 +195,20 @@ namespace PlexHelpers.MovieCollectionImporter
                             var responseContent = response.Content.ReadAsStringAsync().Result;
                             response.EnsureSuccessStatusCode();
 
-                            var movieResponse = JsonConvert.DeserializeObject<MovieResponse>(responseContent);
-
-                            existingCollections = movieResponse.MediaContainer.Metadata.SelectMany(p => p.Collections.Select(c => c.Tag)).ToList();
+                            //var movieResponse = JsonConvert.DeserializeObject<MovieResponse>(responseContent);
+                            var movieResponse = JsonConvert.DeserializeObject<dynamic>(responseContent);
+                            try
+                            {
+                                if (Helpers.DoesPropertyExist(movieResponse.MediaContainer.Metadata[0], "Collection"))
+                                {
+                                    existingCollections = ((IEnumerable<dynamic>)movieResponse.MediaContainer.Metadata[0].Collection).Select(p => (string)p.tag).ToList();
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                moviesNotFound.Add(movieToImport);
+                                Console.WriteLine(ex);
+                            }
                         }
                     }
 
@@ -209,7 +221,6 @@ namespace PlexHelpers.MovieCollectionImporter
                     collectionAddRequest.PlexToken = plexToken;
                     collectionAddRequest.MetadataId = plexMovie.MetadataId;
                     collectionAddRequest.Collections = existingCollections;
-
                     url = new UriBuilder();
                     url.Scheme = "https";
                     url.Host = host;
@@ -229,14 +240,12 @@ namespace PlexHelpers.MovieCollectionImporter
                             response.EnsureSuccessStatusCode();
                         }
                     }
-
                 }
                 catch (Exception ex)
                 {
-
+                    moviesNotFound.Add(movieToImport);
+                    Console.WriteLine(ex);
                 }
-
-
             }
 
             Helpers.WriteCollectionCSV(_plexCollectionMovieImportListPath, moviesNotFound);

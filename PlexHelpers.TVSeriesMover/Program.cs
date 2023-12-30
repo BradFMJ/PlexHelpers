@@ -51,9 +51,10 @@ namespace PlexHelpers.TVSeriesMover
             foreach (var tvShow in _tvShows)
             {
                 //if (tvShow.HasAllEpisodes && (tvShow.HasAllSubtitles || tvShow.AllSubtitlesRecentlySearched))
-                if (tvShow.HasAllEpisodes)
-                //if (tvShow.location.StartsWith("C:\\Share\\PlexNewTV3"))
-                {
+
+                    if (tvShow.HasAllEpisodes)
+                    {
+
                     count++;
 
                     DirectoryInfo tvshowLocation = Helpers.SeriesFolderNameFixer(tvShow.location);

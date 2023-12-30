@@ -93,8 +93,8 @@ namespace PlexHelpers.Common.Plex
         [DataMember(Name = "summary")]
         public string Summary { get; set; }
 
-        [DataMember(Name = "rating")]
-        public decimal Rating { get; set; }
+        //[DataMember(Name = "rating")]
+        //public decimal Rating { get; set; }
 
         [DataMember(Name = "audienceRating")]
         public decimal AudienceRating { get; set; }
