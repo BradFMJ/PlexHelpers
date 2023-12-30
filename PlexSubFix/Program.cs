@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PlexHelpers.Common;
+using PlexHelpers.Common.Renaming;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -81,10 +83,12 @@ namespace PlexSubFix
 
         private static Dictionary<string, List<Regex>> LanguageCodesNew = new Dictionary<string, List<Regex>>();
 
-        private static List<string> VideoFileExtensions = new List<string> { ".mkv", ".mp4", ".avi", ".m4v", ".idx", ".sub", ".srt", ".wmv" };
 
         static void Main(string[] args)
         {
+            //ChangeSeason.Move(new DirectoryInfo(@"\\192.168.1.61\tvshows\1080P\Chilling Adventures of Sabrina\Season 03"), "02", true);
+            //int i = 0;
+
             #region Languages
 
             LanguageCodesNew["en"] = new List<Regex> {
@@ -313,17 +317,17 @@ namespace PlexSubFix
             //CheckFolder(@"T:\Media\Movies");
 
             //CleanCompletedFolder(@"C:\Users\Brad\Downloads\Newshosting");
-            CleanCompletedFolder(@"C:\Share\H\Completed");
+            //CleanCompletedFolder(@"C:\Share\H\Completed");
             //CleanCompletedFolder(@"H:\Media\Backlog");
 
             //FixMovieSubTitles(@"U:\Media\Movies");
             //FixMovieSubTitles(@"J:\Media\Movies");
-            FixMovieSubTitles(@"C:\Share\H\Movies");
-            FixMovieSubTitles(@"C:\Share\H\Completed");
-            FixTvShowSubTitles(@"C:\Share\H\Completed");
+            //FixMovieSubTitles(@"C:\Share\H\Movies");
+            //FixMovieSubTitles(@"C:\Share\H\Completed");
+            //FixTvShowSubTitles(@"C:\Share\H\Completed");
 
 
-            //FixTvShowNames(@"C:\Users\Brad\Downloads\Newshosting");
+            FixTvShowNames(@"C:\Users\bradf\Downloads\Newshosting\Brotherhood (2006)");
             //FixTvShowSubTitles(@"H:\Media\Backlog");
 
 
@@ -431,105 +435,240 @@ namespace PlexSubFix
                 _FixTvShowNames(subDir);
             }
 
-            var tvShows = directoryInfo.GetFilesByExtensions(VideoFileExtensions.ToArray());
+            var tvShows = directoryInfo.GetFilesByExtensions(Settings.VideoFileExtensions.ToArray());
 
             Match match;
 
             foreach (var tvShow in tvShows)
             {
-
-                //match = Regex.Match(tvShow.Name, @"^[Ss](\d+)[Ee](\d+)");
-                //if (match.Success)
-                //{
-                //    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                //    if (!folderMatch.Success)
-                //    {
-                //        continue;
-                //    }
-                //    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-
-                //    string season = match.Groups[1].Value.PadLeft(2, '0');
-                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                //    if (folderSeason != season)
-                //    {
-                //        continue;
-                //    }
-
-                //    var badChar = tvShow.Name.Substring(match.Groups[0].Value.Length, 1);
-
-                //    if (badChar == " " || badChar == ".")
-                //    {
-                //        continue;
-                //    }
-                //    if (badChar == "E")
-                //    {
-                //        badChar = tvShow.Name.Substring(match.Groups[0].Value.Length + 1, 1);
-                //        var arr = new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
-                //        if (arr.Contains(badChar))
-                //        {
-                //            continue;
-                //        }
-                //    }
-                //    string destination = string.Format("S{0}E{1} ", season, episode);
-                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                //    continue;
-                //}
-
-                //match = Regex.Match(tvShow.Name, @"sprinter-sgctc[Ss](\d+)[Ee](\d+)");
-                //if (match.Success)
-                //{
-                //    string season = match.Groups[1].Value.PadLeft(2, '0');
-                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                //    string destination = string.Format("aaf-sgctc - S{0}E{1}", season, episode);
-                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                //    continue;
-                //}
-
-
-
                 match = Regex.Match(tvShow.Name, @"[Ss](\d+)[Ee](\d+)");
                 if (match.Success)
                 {
                     continue;
                 }
-                //match = Regex.Match(tvShow.Name, @"- (\d{3}) -");
+
+                var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
+                if (!folderMatch.Success)
+                {
+                    continue;
+                }
+                string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+
+                match = Regex.Match(tvShow.Name, @"\.(\d)(\d{2})\.");
+                //match = Regex.Match(tvShow.Name, @"(\d{3})");
+                if (match.Success)
+                {
+                    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+                    var intEpisode = int.Parse(episode);
+
+                    //if (folderSeason == "02")
+                    //{
+                    //    intEpisode -= 13;
+                    //}
+                    //if (folderSeason == "03")
+                    //{
+                    //    intEpisode -= 28;
+                    //}
+                    //if (folderSeason == "04")
+                    //{
+                    //    intEpisode -= 68;
+                    //}
+                    //if (folderSeason == "05")
+                    //{
+                    //    intEpisode -= 101;
+                    //}
+                    //if (folderSeason == "06")
+                    //{
+                    //    intEpisode -= 132;
+                    //}
+
+                    string destination = string.Format(".S{0}E{1}.", folderSeason, intEpisode.ToString().PadLeft(2, '0'));
+                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                    continue;
+                }
+
+                ////match = Regex.Match(tvShow.Name, @"^[Ss](\d+)[Ee](\d+)");
+                ////if (match.Success)
+                ////{
+                ////    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
+                ////    if (!folderMatch.Success)
+                ////    {
+                ////        continue;
+                ////    }
+                ////    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+
+                ////    string season = match.Groups[1].Value.PadLeft(2, '0');
+                ////    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+                ////    if (folderSeason != season)
+                ////    {
+                ////        continue;
+                ////    }
+
+                ////    var badChar = tvShow.Name.Substring(match.Groups[0].Value.Length, 1);
+
+                ////    if (badChar == " " || badChar == ".")
+                ////    {
+                ////        continue;
+                ////    }
+                ////    if (badChar == "E")
+                ////    {
+                ////        badChar = tvShow.Name.Substring(match.Groups[0].Value.Length + 1, 1);
+                ////        var arr = new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+                ////        if (arr.Contains(badChar))
+                ////        {
+                ////            continue;
+                ////        }
+                ////    }
+                ////    string destination = string.Format("S{0}E{1} ", season, episode);
+                ////    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                ////    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                ////    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                ////    continue;
+                ////}
+
+                ////match = Regex.Match(tvShow.Name, @"sprinter-sgctc[Ss](\d+)[Ee](\d+)");
+                ////if (match.Success)
+                ////{
+                ////    string season = match.Groups[1].Value.PadLeft(2, '0');
+                ////    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+                ////    string destination = string.Format("aaf-sgctc - S{0}E{1}", season, episode);
+                ////    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                ////    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                ////    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                ////    continue;
+                ////}
+
+
+
+                ////match = Regex.Match(tvShow.Name, @"[Ss](\d+)[Ee](\d+)");
+                ////if (match.Success)
+                ////{
+                ////    continue;
+                ////}
+                ////match = Regex.Match(tvShow.Name, @"- (\d{3}) -");
+                ////if (match.Success)
+                ////{
+                ////    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
+                ////    if (!folderMatch.Success)
+                ////    {
+                ////        continue;
+                ////    }
+                ////    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+
+                ////    string episode = match.Groups[1].Value.PadLeft(2, '0');
+
+                ////    var intEpisode = int.Parse(episode);
+
+                ////    if (folderSeason == "02")
+                ////    {
+                ////        intEpisode -= 5;
+                ////    }
+                ////    if (folderSeason == "03")
+                ////    {
+                ////        intEpisode -= 25;
+                ////    }
+                ////    if (folderSeason == "04")
+                ////    {
+                ////        intEpisode -= 45;
+                ////    }
+
+                ////    string destination = string.Format("- S{0}E{1} -", folderSeason, intEpisode.ToString().PadLeft(2, '0'));
+                ////    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                ////    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                ////    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                ////    continue;
+                ////}
+                ////match = Regex.Match(tvShow.Name, @"SE(\d+) EP(\d+)");
+                ////if (match.Success)
+                ////{
+                ////    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
+                ////    if (!folderMatch.Success)
+                ////    {
+                ////        continue;
+                ////    }
+                ////    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+                ////    string season = match.Groups[1].Value.PadLeft(2, '0');
+
+                ////    int intEpisode = int.Parse(match.Groups[2].Value);
+                ////    string episode = intEpisode.ToString().PadLeft(2, '0');
+
+                ////    if (season == "02")
+                ////    {
+                ////        episode = (intEpisode - 21).ToString().PadLeft(2, '0');
+                ////    }
+
+                ////    if (season == "03")
+                ////    {
+                ////        episode = (intEpisode - 51).ToString().PadLeft(2, '0');
+                ////    }
+
+                ////    if (season == "04")
+                ////    {
+                ////        episode = (intEpisode - 65).ToString().PadLeft(2, '0');
+                ////    }
+
+                ////    if (season != folderSeason)
+                ////    {
+                ////        continue;
+                ////    }
+
+
+                ////    string destination = string.Format("S{0}E{1} - ", season, episode);
+                ////    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                ////    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                ////    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                ////    continue;
+                ////}
+                ////match = Regex.Match(tvShow.Name, @" \- (\d{2}) \- ");
+                ////if (match.Success)
+                ////{
+                ////    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
+                ////    if (!folderMatch.Success)
+                ////    {
+                ////        continue;
+                ////    }
+                ////    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+
+
+                ////    string episode = match.Groups[1].Value.PadLeft(2, '0');
+                ////    int episodeInt = int.Parse(episode);
+                ////    if (folderSeason == "02")
+                ////    {
+                ////        episodeInt = episodeInt - 15;
+                ////        episode = episodeInt.ToString().PadLeft(2, '0');
+                ////    }
+
+                ////    string destination = string.Format(" - S{0}E{1} - ", folderSeason, episode);
+                ////    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                ////    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                ////    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                ////    continue;
+                ////}
+                //match = Regex.Match(tvShow.Name, @"(\d+)e(\d+)-");
                 //if (match.Success)
                 //{
-                //    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                //    if (!folderMatch.Success)
-                //    {
-                //        continue;
-                //    }
-                //    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
 
-                //    string episode = match.Groups[1].Value.PadLeft(2, '0');
+                //    string season = match.Groups[1].Value.PadLeft(4, '0');
+                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
 
-                //    var intEpisode = int.Parse(episode);
-
-                //    if (folderSeason == "02")
-                //    {
-                //        intEpisode -= 5;
-                //    }
-                //    if (folderSeason == "03")
-                //    {
-                //        intEpisode -= 25;
-                //    }
-                //    if (folderSeason == "04")
-                //    {
-                //        intEpisode -= 45;
-                //    }
-
-                //    string destination = string.Format("- S{0}E{1} -", folderSeason, intEpisode.ToString().PadLeft(2, '0'));
+                //    string destination = string.Format("S{0}E{1} - ", season, episode);
                 //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
 
                 //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
@@ -537,33 +676,23 @@ namespace PlexSubFix
                 //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
                 //    continue;
                 //}
-                //match = Regex.Match(tvShow.Name, @"SE(\d+) EP(\d+)");
+                //match = Regex.Match(tvShow.Name, @"S(\d+)-E(\d+)_");
                 //if (match.Success)
                 //{
-                //    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                //    if (!folderMatch.Success)
-                //    {
-                //        continue;
-                //    }
-                //    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-                //    string season = match.Groups[1].Value.PadLeft(2, '0');
 
-                //    int intEpisode = int.Parse(match.Groups[2].Value);
-                //    string episode = intEpisode.ToString().PadLeft(2, '0');
+                //    string season = match.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
 
                 //    if (season == "02")
                 //    {
-                //        episode = (intEpisode - 21).ToString().PadLeft(2, '0');
+                //        var s2 = int.Parse(episode);
+                //        episode = (s2 - 13).ToString().PadLeft(2, '0');
                 //    }
 
                 //    if (season == "03")
                 //    {
-                //        episode = (intEpisode - 51).ToString().PadLeft(2, '0');
-                //    }
-
-                //    if (season == "04")
-                //    {
-                //        episode = (intEpisode - 65).ToString().PadLeft(2, '0');
+                //        var s3 = int.Parse(episode);
+                //        episode = (s3 - 21).ToString().PadLeft(2, '0');
                 //    }
 
                 //    if (season != folderSeason)
@@ -580,24 +709,262 @@ namespace PlexSubFix
                 //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
                 //    continue;
                 //}
-                //match = Regex.Match(tvShow.Name, @" \- (\d{2}) \- ");
+
+                //match = Regex.Match(tvShow.Name, @"Season (\d+) Episode (\d+)");
                 //if (match.Success)
                 //{
-                //    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                //    if (!folderMatch.Success)
-                //    {
-                //        continue;
-                //    }
-                //    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+                //    string season = match.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+                //    string destination = string.Format("S{0}E{1}", season, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"Season (\d+) - (\d+)");
+                //if (match.Success)
+                //{
+                //    string season = match.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+                //    string destination = string.Format("S{0}E{1}", season, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"\[(\d+)x(\d+)\]");
+                //if (match.Success)
+                //{
+                //    string season = match.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+                //    string destination = string.Format("S{0}E{1}", season, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"(\d+)x(\d+)");
+                //if (match.Success)
+                //{
+                //    string season = match.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+                //    string destination = string.Format("S{0}E{1}", season, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"[Ss](\d+)\s+[Ee](\d+)");
+                //if (match.Success)
+                //{
+
+                //    string season = match.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+                //    string destination = string.Format("S{0}E{1}", season, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"[Ss](\d+)\.[Ee](\d+)");
+                //if (match.Success)
+                //{
+
+                //    string season = match.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+                //    string destination = string.Format("S{0}E{1}", season, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"^Episode (\d{3})");
+                //if (match.Success)
+                //{
+
 
 
                 //    string episode = match.Groups[1].Value.PadLeft(2, '0');
-                //    int episodeInt = int.Parse(episode);
-                //    if (folderSeason == "02")
+
+                //    string destination = string.Format("S{0}E{1}", folderSeason, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"^Episode (\d{2})");
+                //if (match.Success)
+                //{
+
+
+                //    string episode = match.Groups[1].Value.PadLeft(2, '0');
+
+                //    string destination = string.Format("S{0}E{1}", folderSeason, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"- Episode (\d{2}) -");
+                //if (match.Success)
+                //{
+
+
+                //    string episode = match.Groups[1].Value.PadLeft(2, '0');
+
+                //    string destination = string.Format("- S{0}E{1} -", folderSeason, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"(\d{1})\.(\d{2})");
+                //if (match.Success)
+                //{
+
+                //    string season = match.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+
+                //    if (season != folderSeason)
                 //    {
-                //        episodeInt = episodeInt - 15;
-                //        episode = episodeInt.ToString().PadLeft(2, '0');
+                //        continue;
                 //    }
+
+
+                //    string destination = string.Format("S{0}E{1}", season, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @"\.(\d{4})-")))
+                //{
+                //    continue;
+                //}
+                //if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @"(\d{4})")))
+                //{
+                //    continue;
+                //}
+                //if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @"^(\d{3}) ")))
+                //{
+                //    continue;
+                //}
+                //if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @"\.(\d{3})\.")))
+                //{
+                //    continue;
+                //}
+                //if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @" \- (\d{3}) \- ")))
+                //{
+                //    continue;
+                //}
+                //if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @" (\d{3})")))
+                //{
+                //    continue;
+                //}
+                ////if (match.Success)
+                ////{
+                ////    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
+                ////    if (!folderMatch.Success)
+                ////    {
+                ////        continue;
+                ////    }
+                ////    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+
+
+                ////    string total = match.Groups[1].Value.PadLeft(4, '0');
+                ////    string season = total.Substring(0, 2);
+                ////    string episode = total.Substring(2, 2);
+
+                ////    if (folderSeason != season)
+                ////    {
+                ////        continue;
+                ////    }
+
+                ////    string destination = string.Format(" - S{0}E{1} - ", season, episode);
+                ////    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                ////    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                ////    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                ////    continue;
+                ////}
+
+                ////match = Regex.Match(tvShow.Name, @" \- (\d{2}) \- ");
+                ////if (match.Success)
+                ////{
+                ////    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
+                ////    if (!folderMatch.Success)
+                ////    {
+                ////        continue;
+                ////    }
+                ////    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+
+
+                ////    string episode = match.Groups[1].Value.PadLeft(2, '0');
+                ////    int episodeInt = int.Parse(episode);
+                ////    if(folderSeason=="02")
+                ////    {
+                ////        episodeInt = episodeInt - 40;
+                ////        episode= episodeInt.ToString().PadLeft(2, '0');
+                ////    }
+
+                ////    string destination = string.Format(" - S{0}E{1} - ", folderSeason, episode);
+                ////    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                ////    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                ////    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                ////    continue;
+                ////}
+
+                //match = Regex.Match(tvShow.Name, @"^Episode (\d{1})");
+                //if (match.Success)
+                //{
+
+
+                //    string episode = match.Groups[1].Value.PadLeft(2, '0');
+
+                //    string destination = string.Format("S{0}E{1}", folderSeason, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"_eps(\d+)_");
+                //if (match.Success)
+                //{
+
+
+                //    string episode = match.Groups[1].Value.PadLeft(2, '0');
 
                 //    string destination = string.Format(" - S{0}E{1} - ", folderSeason, episode);
                 //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
@@ -607,311 +974,13 @@ namespace PlexSubFix
                 //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
                 //    continue;
                 //}
-                match = Regex.Match(tvShow.Name, @"(\d+)e(\d+)-");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-                    string season = match.Groups[1].Value.PadLeft(4, '0');
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1} - ", season, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"S(\d+)-E(\d+)_");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-                    string season = match.Groups[1].Value.PadLeft(2, '0');
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                    if (season == "02")
-                    {
-                        var s2 = int.Parse(episode);
-                        episode = (s2 - 13).ToString().PadLeft(2, '0');
-                    }
-
-                    if (season == "03")
-                    {
-                        var s3 = int.Parse(episode);
-                        episode = (s3 - 21).ToString().PadLeft(2, '0');
-                    }
-
-                    if (season != folderSeason)
-                    {
-                        continue;
-                    }
-
-
-                    string destination = string.Format("S{0}E{1} - ", season, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-
-                match = Regex.Match(tvShow.Name, @"Season (\d+) Episode (\d+)");
-                if (match.Success)
-                {
-                    string season = match.Groups[1].Value.PadLeft(2, '0');
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1}", season, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"Season (\d+) - (\d+)");
-                if (match.Success)
-                {
-                    string season = match.Groups[1].Value.PadLeft(2, '0');
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1}", season, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"\[(\d+)x(\d+)\]");
-                if (match.Success)
-                {
-                    string season = match.Groups[1].Value.PadLeft(2, '0');
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1}", season, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"(\d+)x(\d+)");
-                if (match.Success)
-                {
-                    string season = match.Groups[1].Value.PadLeft(2, '0');
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1}", season, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"[Ss](\d+)\s+[Ee](\d+)");
-                if (match.Success)
-                {
-
-                    string season = match.Groups[1].Value.PadLeft(2, '0');
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1}", season, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"[Ss](\d+)\.[Ee](\d+)");
-                if (match.Success)
-                {
-
-                    string season = match.Groups[1].Value.PadLeft(2, '0');
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1}", season, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"^Episode (\d{3})");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-
-
-                    string episode = match.Groups[1].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1}", folderSeason, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"^Episode (\d{2})");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-
-
-                    string episode = match.Groups[1].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1}", folderSeason, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"- Episode (\d{2}) -");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-
-
-                    string episode = match.Groups[1].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("- S{0}E{1} -", folderSeason, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"(\d{1})\.(\d{2})");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-                    string season = match.Groups[1].Value.PadLeft(2, '0');
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-
-                    if (season != folderSeason)
-                    {
-                        continue;
-                    }
-
-
-                    string destination = string.Format("S{0}E{1}", season, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @"\.(\d{4})-")))
-                {
-                    continue;
-                }
-                if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @"(\d{4})")))
-                {
-                    continue;
-                }
-                if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @"^(\d{3}) ")))
-                {
-                    continue;
-                }
-                if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @"\.(\d{3})\.")))
-                {
-                    continue;
-                }
-                if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @" \- (\d{3}) \- ")))
-                {
-                    continue;
-                }
-                if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @" (\d{3})")))
-                {
-                    continue;
-                }
+                //match = Regex.Match(tvShow.Name, @"- Ep. (\d+) -");
                 //if (match.Success)
                 //{
-                //    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                //    if (!folderMatch.Success)
-                //    {
-                //        continue;
-                //    }
-                //    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
 
-
-                //    string total = match.Groups[1].Value.PadLeft(4, '0');
-                //    string season = total.Substring(0, 2);
-                //    string episode = total.Substring(2, 2);
-
-                //    if (folderSeason != season)
-                //    {
-                //        continue;
-                //    }
-
-                //    string destination = string.Format(" - S{0}E{1} - ", season, episode);
-                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                //    continue;
-                //}
-
-                //match = Regex.Match(tvShow.Name, @" \- (\d{2}) \- ");
-                //if (match.Success)
-                //{
-                //    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                //    if (!folderMatch.Success)
-                //    {
-                //        continue;
-                //    }
-                //    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
 
 
                 //    string episode = match.Groups[1].Value.PadLeft(2, '0');
-                //    int episodeInt = int.Parse(episode);
-                //    if(folderSeason=="02")
-                //    {
-                //        episodeInt = episodeInt - 40;
-                //        episode= episodeInt.ToString().PadLeft(2, '0');
-                //    }
 
                 //    string destination = string.Format(" - S{0}E{1} - ", folderSeason, episode);
                 //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
@@ -922,94 +991,22 @@ namespace PlexSubFix
                 //    continue;
                 //}
 
-                match = Regex.Match(tvShow.Name, @"^Episode (\d{1})");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-
-
-                    string episode = match.Groups[1].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1}", folderSeason, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"_eps(\d+)_");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+                //match = Regex.Match(tvShow.Name, @"(\d{2})\. ");
+                //if (match.Success)
+                //{
 
 
 
-                    string episode = match.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[1].Value.PadLeft(2, '0');
 
-                    string destination = string.Format(" - S{0}E{1} - ", folderSeason, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+                //    string destination = string.Format("S{0}E{1} - ", folderSeason, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
 
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
 
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"- Ep. (\d+) -");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-
-
-
-                    string episode = match.Groups[1].Value.PadLeft(2, '0');
-
-                    string destination = string.Format(" - S{0}E{1} - ", folderSeason, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-
-                match = Regex.Match(tvShow.Name, @"(\d{2})\. ");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-
-
-
-                    string episode = match.Groups[1].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1} - ", folderSeason, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
 
                 //match = Regex.Match(tvShow.Name, @" (\d{2}) ");
                 //if (match.Success)
@@ -1578,7 +1575,7 @@ namespace PlexSubFix
             string destination = string.Format(" - S{0}E{1} - ", season, episode);
             string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
 
-            if (VideoFileExtensions.All(p => !newFileName.EndsWith(p)))
+            if (Settings.VideoFileExtensions.All(p => !newFileName.EndsWith(p)))
             {
                 throw new Exception("Invalid File Name");
             }
@@ -1605,19 +1602,6 @@ namespace PlexSubFix
             {
                 return obj.GetHashCode();
             }
-        }
-    }
-
-    public static class ExtensionMethods
-    {
-        public static IEnumerable<FileInfo> GetFilesByExtensions(this DirectoryInfo dir, params string[] extensions)
-        {
-            if (extensions == null)
-            {
-                throw new ArgumentNullException("extensions");
-            }
-            IEnumerable<FileInfo> files = dir.EnumerateFiles();
-            return files.Where(f => extensions.Contains(f.Extension.ToLower()));
         }
     }
 }

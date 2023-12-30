@@ -21,6 +21,7 @@ namespace PlexHelpers.MovieCollectionFixer
             }
 
             _plexImportListMovies = _plexImportListMovies.Distinct(new PlexCollectionMovieComparer()).ToList();
+            _plexImportListMovies = _plexImportListMovies.Where(p => p.CollectionName != "In Theaters").ToList();
 
             File.WriteAllLines(@"C:\imdb\Lists\import.csv", _plexImportListMovies.Select(p => p.ToString()));
         }

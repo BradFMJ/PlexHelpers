@@ -10,18 +10,19 @@ namespace PlexHelpers.InPlaceProcessor
     class Program
     {
         private static bool CanMove = true;
-        private static bool CanDelete = true;
+        private static bool CanDelete = false;
         private static List<PlexMovie> _plexMovies;
-        private static string _sourceDrive = "J";
-        private static string _targetDrive = "B";
-        private static string _tmdbDrive = "J";
-        private static string _unmatchedDrive = "J";
-        private static string _sourceDrivePath = @":\Media\Movies";
+        private static string _sourceDrive = "C";
+        private static string _targetDrive = "C";
+        private static string _tmdbDrive = "C";
+        private static string _unmatchedDrive = "C";
+        private static string _sourceDrivePath = @":\Share\Movies\1080P";
         private static string _targetDrivePath = @":\Share\Movies\1080P";
 
         static void Main(string[] args)
         {
-            _plexMovies = Helpers.ReadPlexMovieCSV("C:\\imdb\\plex-movies.csv", Helpers.ReadPlexMapCSV("C:\\imdb\\plex-map.csv"));
+            //_plexMovies = Helpers.ReadPlexMovieCSV("C:\\imdb\\plex-movies.csv", Helpers.ReadPlexMapCSV("C:\\imdb\\plex-map.csv"));
+            _plexMovies = Helpers.ReadPlexMovieCSV("C:\\Share\\H\\plex-movies.csv");
 
             FileInfo fileInfo;
 
@@ -147,7 +148,7 @@ namespace PlexHelpers.InPlaceProcessor
 
                         var targetDirectory = _unmatchedDrive + _targetDrivePath + "\\" + plexMovie.MovieFolderName;
 
-                        if(string.Equals(targetDirectory, plexMovie.FileInfo.DirectoryName, StringComparison.InvariantCultureIgnoreCase))
+                        if (string.Equals(targetDirectory, plexMovie.FileInfo.DirectoryName, StringComparison.InvariantCultureIgnoreCase))
                         {
                             continue;
                         }

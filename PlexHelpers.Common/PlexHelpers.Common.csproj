@@ -32,6 +32,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -44,14 +47,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Medusa\Episode.cs" />
     <Compile Include="Medusa\TVShow.cs" />
+    <Compile Include="Models\PlexAlbum.cs" />
+    <Compile Include="Models\PlexArtist.cs" />
     <Compile Include="Models\PlexCollectionMovie.cs" />
+    <Compile Include="Models\PlexCollectionTrack.cs" />
     <Compile Include="Models\PlexCollectionTVShow.cs" />
     <Compile Include="Models\PlexIMDBMap.cs" />
     <Compile Include="Models\PlexMetadDataItem.cs" />
     <Compile Include="Models\PlexMovie.cs" />
+    <Compile Include="Models\PlexTrack.cs" />
     <Compile Include="Plex\CollectionAddRequest.cs" />
     <Compile Include="Plex\CollectionListRequest.cs" />
     <Compile Include="Plex\CollectionListResponse.cs" />
@@ -61,7 +69,12 @@
     <Compile Include="Plex\MovieResponse.cs" />
     <Compile Include="Plex\TVShowResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Renaming\ChangeSeason.cs" />
     <Compile Include="Settings.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

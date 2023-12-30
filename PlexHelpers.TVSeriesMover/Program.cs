@@ -13,8 +13,8 @@ namespace PlexHelpers.TVSeriesMover
     {
         private static bool CanMove = true;
         private static bool CanDelete = true;
-        private static string _targetDrive = "Y";
-        private static string _drivePath = @":\Media\TV Shows";
+        private static string _targetDrive = "C";
+        private static string _drivePath = @":\Share\tvshows\1080P";
 
         private static List<TVShow> _tvShows;
         private static List<Episode> _episodes;
@@ -43,15 +43,16 @@ namespace PlexHelpers.TVSeriesMover
             }
             _tvShows = _tvShows.Where(p => p.HasAllEpisodes).OrderBy(p => p.SeriesSizeMB).ToList();
 
-            _tvShows = _tvShows.Where(p => p.HasAllSubtitles || p.AllSubtitlesRecentlySearched).OrderBy(p => p.SeriesSizeMB).ToList();
+            //_tvShows = _tvShows.Where(p => p.HasAllSubtitles || p.AllSubtitlesRecentlySearched).OrderBy(p => p.SeriesSizeMB).ToList();
 
             int totalCount = _tvShows.Count;
             int count = 0;
             ulong totalMBMoved = 0;
             foreach (var tvShow in _tvShows)
             {
-                if (tvShow.HasAllEpisodes && (tvShow.HasAllSubtitles || tvShow.AllSubtitlesRecentlySearched))
-                {
+                //if (tvShow.HasAllEpisodes && (tvShow.HasAllSubtitles || tvShow.AllSubtitlesRecentlySearched))
+                    if (tvShow.HasAllEpisodes)
+                    {
                     count++;
 
                     DirectoryInfo tvshowLocation = Helpers.SeriesFolderNameFixer(tvShow.location);

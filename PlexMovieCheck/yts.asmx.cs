@@ -42,7 +42,8 @@ namespace PlexHelpers.Web
                 {
                     if (_plexMovies == null)
                     {
-                        _plexMovies = Helpers.ReadPlexMovieCSV("C:\\imdb\\plex-movies.csv", Helpers.ReadPlexMapCSV("C:\\imdb\\plex-map.csv"));
+                        _plexMovies = Helpers.ReadPlexMovieCSV("C:\\Share\\H\\plex-movies.csv");
+                        //_plexMovies = Helpers.ReadPlexMovieCSV("C:\\imdb\\plex-movies.csv", Helpers.ReadPlexMapCSV("C:\\imdb\\plex-map.csv"));
 
                         _cacheDateTime = DateTime.Now;
                     }
