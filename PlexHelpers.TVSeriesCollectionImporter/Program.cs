@@ -113,6 +113,7 @@ namespace PlexHelpers.TVSeriesCollectionImporter
                 }
                 else
                 {
+                    studioMappings.Add(plexTVShow.Studio, "");
                     Console.WriteLine("No Match for Studio {0}", plexTVShow.Studio);
                 }
             }
@@ -285,6 +286,14 @@ namespace PlexHelpers.TVSeriesCollectionImporter
 
 
             }
+
+            var lines = new List<string>();
+
+            foreach(var studioMapping in studioMappings.OrderBy(p=>p.Key))
+            {
+                lines.Add(Helpers.EscapeCsvField(studioMapping.Key) + "," + Helpers.EscapeCsvField(studioMapping.Value));
+            }
+            File.WriteAllLines(@"C:\\imdb\\tv-show-mapping.csv", lines);
 
             Helpers.WriteTVShowCollectionCSV(_plexCollectionTVShowImportListPath, tvShowsNotFound);
 
