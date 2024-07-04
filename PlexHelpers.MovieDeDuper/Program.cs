@@ -15,7 +15,9 @@ namespace PlexHelpers.MovieDeDuper
 
         static void Main(string[] args)
         {
-            _plexMovies = Helpers.ReadPlexMovieCSV("C:\\imdb\\plex-movies.csv", Helpers.ReadPlexMapCSV("C:\\imdb\\plex-map.csv"));
+            //_plexMovies = Helpers.ReadPlexMovieCSV("C:\\Share\\H\\plex-movies.csv", Helpers.ReadPlexMapCSV("C:\\Share\\H\\plex-map.csv"));
+            _plexMovies = Helpers.ReadPlexMovieCSV("C:\\Share\\H\\plex-movies.csv");
+
 
             var sourceRootDir = "J" + @":\Media\Movies";
 
@@ -58,10 +60,38 @@ namespace PlexHelpers.MovieDeDuper
 
                     //look for the version with a preferred release group and 1080p
                     var matches = versions.Where(e => Settings.ReleaseGroups.Any(p => e.FileInfo.Name.ToLowerInvariant().Contains(p)) && e.FileInfo.Name.Contains("1080")).ToList();
-                    if (matches.Count == 1)
+                    if (matches.Count == 1 || matches.Count == 2)
                     {
+                        PlexMovie toBeSaved;
                         //pick the the version to be saved
-                        var toBeSaved = matches.First();
+                        if (matches.Count == 1)
+                        {
+                            toBeSaved = matches.First();
+                        }
+                        else
+                        {
+                            //both are 1080p with a preferred release group
+                            var bluray = matches.Where(p => p.FullFileName.ToLowerInvariant().Contains("bluray")).ToList();
+                            if(bluray.Count == 1)
+                            {
+                                toBeSaved = bluray.First();
+                            }
+                            else
+                            {
+                                //both are bluray
+                                var x264 = matches.Where(p => p.FullFileName.ToLowerInvariant().Contains("x264")).ToList();
+                                if (x264.Count == 1)
+                                {
+                                    toBeSaved = x264.First();
+                                }
+                                else
+                                {
+                                    //both are x264
+                                    toBeSaved = matches.First();
+                                }
+                            }
+                        }
+
                         //pick the the version that was not matched to be deleted
                         var toBeRemoved = versions.Single(p => p.FullFileName != toBeSaved.FullFileName);
                         //make sure we actually still have 2 copies on disk

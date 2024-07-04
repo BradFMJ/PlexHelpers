@@ -43,14 +43,15 @@ namespace PlexHelpers.Web
                 {
                     if (_plexMovies == null)
                     {
-                        _plexMovies = Helpers.ReadPlexMovieCSV("C:\\imdb\\plex-movies.csv", Helpers.ReadPlexMapCSV("C:\\imdb\\plex-map.csv"));
+                        //_plexMovies = Helpers.ReadPlexMovieCSV("C:\\imdb\\plex-movies.csv", Helpers.ReadPlexMapCSV("C:\\imdb\\plex-map.csv"));
+                        _plexMovies = Helpers.ReadPlexMovieCSV("C:\\Share\\H\\plex-movies.csv");
 
                         _cacheDateTime = DateTime.Now;
                     }
                 }
             }
 
-            var yearRegex = new Regex("\\.(19[123456789]\\d{1}|20[012]\\d{1})\\.");
+            var yearRegex = new Regex(@"[\.\(\s]{1}(19[123456789]\d{1}|20[012]\d{1})[\.\)\s]{1}");
 
             var match = yearRegex.Match(title);
 
@@ -95,20 +96,20 @@ namespace PlexHelpers.Web
                         returnCss = "background-color:#ffff66";//Yellow
                     }
 
-                    if (plexMovie.AudioChannels < 2)
+                    if (plexMovie.FullFileName.ToLowerInvariant().Contains("webrip") && title.ToLowerInvariant().Contains("bluray") && title.ToLowerInvariant().Contains("1080p"))
                     {
                         returnCss = "background-color:#ffff66";//Yellow
                     }
 
-                    if (plexMovie.Size < 694960128)
+                    if (plexMovie.AudioChannels < 2 && !plexMovie.FullFileName.ToLowerInvariant().Contains("bluray"))
                     {
                         returnCss = "background-color:#ffff66";//Yellow
                     }
 
-                    if (plexMovie.DisplayAspectRatio < (decimal)1.5)
-                    {
-                        returnCss = "background-color:#ffff66";//Yellow
-                    }
+                    //if (plexMovie.Size < 694960128)
+                    //{
+                    //    returnCss = "background-color:#ffff66";//Yellow
+                    //}
 
                     if (plexMovie.Width < 720)
                     {
@@ -128,10 +129,6 @@ namespace PlexHelpers.Web
                         {
                             returnCss = "background-color:#ff6666";//Red
                         }
-                    }
-                    else
-                    {
-                        returnCss = "background-color:#66ff66";//Green
                     }
 
                     if (size.Contains("GB"))
@@ -185,6 +182,16 @@ namespace PlexHelpers.Web
                         || afterMovieTitle.Contains("portuguese")
                         || afterMovieTitle.Contains("vietnamese")
                         || afterMovieTitle.Contains("polish")
+                        || afterMovieTitle.Contains("georgian")
+                        || afterMovieTitle.Contains("danish")
+                        || afterMovieTitle.Contains("turkish")
+                        || afterMovieTitle.Contains("ukrainian")
+                        || afterMovieTitle.Contains("dutch")
+                        || afterMovieTitle.Contains("hungarian")
+                        || afterMovieTitle.Contains("arabic")
+                        || afterMovieTitle.Contains("indonesian")
+                        || afterMovieTitle.Contains("persian")
+                        || afterMovieTitle.Contains("filipino")
                         //|| isDocumentary
                         )
                     {

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PlexHelpers.Common;
+using PlexHelpers.Common.Renaming;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -81,17 +83,26 @@ namespace PlexSubFix
 
         private static Dictionary<string, List<Regex>> LanguageCodesNew = new Dictionary<string, List<Regex>>();
 
-        private static List<string> VideoFileExtensions = new List<string> { ".mkv", ".mp4", ".avi", ".m4v", ".idx", ".sub", ".srt", ".wmv" };
 
         static void Main(string[] args)
         {
+            //ChangeSeason.Move(new DirectoryInfo(@"\\192.168.1.61\tvshows\1080P\Chilling Adventures of Sabrina\Season 03"), "02", true);
+            //int i = 0;
+
             #region Languages
 
             LanguageCodesNew["en"] = new List<Regex> {
+                new Regex("^en\\.sdh\\.srt$", RegexOptions.Compiled),
+                new Regex("^en\\.forced\\.srt$", RegexOptions.Compiled),
                 new Regex("^eng\\.srt$", RegexOptions.Compiled),
                 new Regex("^english.*\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_english\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,english.*\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_eng\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_eng,sdh\\.\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_eng,british\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_eng,british _ sdh\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_eng,forced\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_und\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.eng\\.srt$", RegexOptions.Compiled)
             };
@@ -100,20 +111,25 @@ namespace PlexSubFix
                 new Regex("^spanish.*\\.srt$", RegexOptions.Compiled),
                 new Regex("^castilian.*\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_spanish\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,spanish\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_spa,.*\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_spa\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.spa\\.srt$", RegexOptions.Compiled)
             };
             LanguageCodesNew["it"] = new List<Regex> {
                 new Regex(".*_italian.*\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,italian.*\\.srt$", RegexOptions.Compiled),
                 new Regex("^ita\\.srt$", RegexOptions.Compiled),
                 new Regex("^italian.*\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_ita\\.srt$", RegexOptions.Compiled)
             };
             LanguageCodesNew["pt"] = new List<Regex> {
                 new Regex(".*_portuguese\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,portuguese\\.srt$", RegexOptions.Compiled),
                 new Regex("^por\\.srt$", RegexOptions.Compiled),
                 new Regex("^portuguese.*\\.srt$", RegexOptions.Compiled),
                 new Regex("^brazilian portuguese.*\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_por,.*\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_por\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.por\\.srt$", RegexOptions.Compiled)
             };
@@ -121,8 +137,10 @@ namespace PlexSubFix
                 new Regex("^ger\\.srt$", RegexOptions.Compiled),
                 new Regex("^german\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_ger\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_ger,.*\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.ger\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_german\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,german\\.srt$", RegexOptions.Compiled),
                 new Regex("^deu\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_deu\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.deu\\.srt$", RegexOptions.Compiled)
@@ -130,19 +148,36 @@ namespace PlexSubFix
             LanguageCodesNew["el"] = new List<Regex> {
                 new Regex("^greek\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_greek\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,greek\\.srt$", RegexOptions.Compiled),
                 new Regex("^gre\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_gre\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_gre,.*\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.gre\\.srt$", RegexOptions.Compiled)
             };
             //LanguageCodesNew["af"] = new List<Regex> { };
             LanguageCodesNew["sq"] = new List<Regex> { new Regex(".*_albanian\\.srt$", RegexOptions.Compiled), new Regex(".*_alb\\.srt$", RegexOptions.Compiled) };
-            LanguageCodesNew["ar"] = new List<Regex> { new Regex("^ara\\.srt$", RegexOptions.Compiled), new Regex(".*_arabic\\.srt$", RegexOptions.Compiled), new Regex(".*_ara\\.srt$", RegexOptions.Compiled), new Regex("^arabic.*\\.srt$", RegexOptions.Compiled) };
+            LanguageCodesNew["ar"] = new List<Regex> {
+                new Regex("^ara\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_arabic\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_ara\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_ara,.*\\.srt$", RegexOptions.Compiled),
+                new Regex("^arabic.*\\.srt$", RegexOptions.Compiled)
+            };
             //LanguageCodesNew["eu"] = new List<Regex> { };
             //LanguageCodesNew["be"] = new List<Regex> { };
-            LanguageCodesNew["bg"] = new List<Regex> { new Regex(".*_bulgarian\\.srt$", RegexOptions.Compiled), new Regex(".*_bul\\.srt$", RegexOptions.Compiled) };
+            LanguageCodesNew["bg"] = new List<Regex> {
+                new Regex(".*_bulgarian\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_bul,.*\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_bul\\.srt$", RegexOptions.Compiled)
+            };
             //LanguageCodesNew["ca"] = new List<Regex> { };
-            LanguageCodesNew["zh"] = new List<Regex> { new Regex("^chi\\.srt$", RegexOptions.Compiled), new Regex(".*_chinese\\.srt$", RegexOptions.Compiled), new Regex(".*_chi\\.srt$", RegexOptions.Compiled),
-                new Regex(".*\\.chi\\.srt$", RegexOptions.Compiled) };
+            LanguageCodesNew["zh"] = new List<Regex> {
+                new Regex("^chi\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_chinese\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_chi,.*\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_chi\\.srt$", RegexOptions.Compiled),
+                new Regex(".*\\.chi\\.srt$", RegexOptions.Compiled)
+            };
             LanguageCodesNew["hr"] = new List<Regex> { new Regex(".*_croatian\\.srt$", RegexOptions.Compiled), new Regex(".*_hrv\\.srt$", RegexOptions.Compiled) };
             LanguageCodesNew["ca"] = new List<Regex> {
                 new Regex(".*_cat\\.srt$", RegexOptions.Compiled),
@@ -151,53 +186,84 @@ namespace PlexSubFix
             LanguageCodesNew["cs"] = new List<Regex>
             {
                 new Regex(".*_czech\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,czech\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_cze\\.srt$", RegexOptions.Compiled),
                 new Regex("^cze\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.cze\\.srt$", RegexOptions.Compiled)
             };
             LanguageCodesNew["da"] = new List<Regex> {
                 new Regex(".*_danish\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,danish\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_dan\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_dan,.*\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.dan\\.srt$", RegexOptions.Compiled), new Regex("^dan\\.srt$", RegexOptions.Compiled)
             };
             LanguageCodesNew["nl"] = new List<Regex> {
                 new Regex("^dut\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_dutch\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,dutch\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_dut\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_dut,.*\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.dut\\.srt$", RegexOptions.Compiled),
                 new Regex("^nld\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_nld\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.nld\\.srt$", RegexOptions.Compiled)
             };
-            LanguageCodesNew["et"] = new List<Regex> { new Regex(".*_estonian\\.srt$", RegexOptions.Compiled) };
+            LanguageCodesNew["et"] = new List<Regex> {
+                new Regex(".*_est,.*\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_est\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_estonian\\.srt$", RegexOptions.Compiled)
+            };
             LanguageCodesNew["ee"] = new List<Regex> { new Regex(".*_ewe\\.srt$") };
             //LanguageCodesNew["fo"] = new List<Regex> { };
             LanguageCodesNew["fa"] = new List<Regex> { new Regex(".*_farsi\\.srt$", RegexOptions.Compiled), new Regex(".*_per\\.srt$", RegexOptions.Compiled) };
-            LanguageCodesNew["fi"] = new List<Regex> { new Regex(".*_finnish\\.srt$", RegexOptions.Compiled), new Regex(".*_fin\\.srt$", RegexOptions.Compiled), new Regex("^fin\\.srt$", RegexOptions.Compiled),
+            LanguageCodesNew["fi"] = new List<Regex> {
+                new Regex(".*_finnish\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,finnish\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_fin\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_fin,.*\\.srt$", RegexOptions.Compiled),
+                new Regex("^fin\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.fin\\.srt$", RegexOptions.Compiled) };
+            LanguageCodesNew["fil"] = new List<Regex> {
+                new Regex(".*_fil,.*\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_fil\\.srt$", RegexOptions.Compiled)
+            };
             LanguageCodesNew["fr"] = new List<Regex> {
                 new Regex("^fre\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_french\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,french\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_fre\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.fre\\.srt$", RegexOptions.Compiled),
                 new Regex("^french.*\\.srt$", RegexOptions.Compiled),
                 new Regex("^fra\\.srt$", RegexOptions.Compiled),
                 new Regex(".*fra\\.srt$", RegexOptions.Compiled),
-                new Regex(".*\\.fra\\.srt$", RegexOptions.Compiled)
+                new Regex(".*\\.fra\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_fre,french \\(france\\)\\.srt$", RegexOptions.Compiled)
+            };
+            LanguageCodesNew["fr-CA"] = new List<Regex> {
+                new Regex(".*_fre,french \\(canada\\)\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_fre,french canadian\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_fre,canadian\\.srt$", RegexOptions.Compiled)
             };
             //LanguageCodesNew["gd"] = new List<Regex> { };
             LanguageCodesNew["he"] = new List<Regex>
             {
                 new Regex(".*_hebrew\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,hebrew\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_heb\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_heb,.*\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.heb\\.srt$", RegexOptions.Compiled),
                 new Regex("^heb\\.srt$", RegexOptions.Compiled)
             };
-            LanguageCodesNew["hi"] = new List<Regex> { new Regex(".*_hindi\\.srt$", RegexOptions.Compiled), new Regex(".*_hin\\.srt$", RegexOptions.Compiled),
+            LanguageCodesNew["hi"] = new List<Regex> {
+                new Regex(".*_hindi\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_hin,.*\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_hin\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.hin\\.srt$", RegexOptions.Compiled) };
             LanguageCodesNew["hu"] = new List<Regex>
             {
                 new Regex(".*_hungarian\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,hungarian\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_hun\\.srt$"),
                 new Regex("^hun\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.hun\\.srt$", RegexOptions.Compiled)
@@ -205,7 +271,10 @@ namespace PlexSubFix
             LanguageCodesNew["is"] = new List<Regex> { new Regex(".*_icelandic\\.srt$", RegexOptions.Compiled), new Regex(".*_ice\\.srt$", RegexOptions.Compiled), new Regex("^ice\\.srt$", RegexOptions.Compiled) };
             LanguageCodesNew["id"] = new List<Regex> {
                 new Regex(".*_indonesian\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,indonesian\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.ind\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_ind\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_ind,.*\\.srt$", RegexOptions.Compiled),
                 new Regex("^ind\\.srt$", RegexOptions.Compiled)
             };
             //LanguageCodesNew["ga"] = new List<Regex> { };
@@ -213,36 +282,70 @@ namespace PlexSubFix
                 new Regex("^japanese\\.srt$", RegexOptions.Compiled),
                 new Regex("^jpn\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_japanese\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,japanese\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_jpn\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_jpn,.*\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.jpn\\.srt$", RegexOptions.Compiled)
+            };
+            LanguageCodesNew["kn"] = new List<Regex> {
+                new Regex(".*_kan,.*\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_kan\\.srt$", RegexOptions.Compiled) 
             };
             LanguageCodesNew["ko"] = new List<Regex> {
                     new Regex("^korean\\.srt$", RegexOptions.Compiled),
                 new Regex("^kor\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_korean\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,korean\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_kor\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_kor,.*\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.kor\\.srt$", RegexOptions.Compiled) }
                 ;
             LanguageCodesNew["kk"] = new List<Regex> { new Regex(".*_kazakh\\.srt$", RegexOptions.Compiled), new Regex(".*_kaz\\.srt$", RegexOptions.Compiled) };
             //LanguageCodesNew["ku"] = new List<Regex> { };
-            LanguageCodesNew["lv"] = new List<Regex> { new Regex(".*_latvian\\.srt$", RegexOptions.Compiled) };
-            LanguageCodesNew["lt"] = new List<Regex> { new Regex(".*_lithuanian\\.srt$", RegexOptions.Compiled) };
-            //LanguageCodesNew["mk"] = new List<Regex> { };
-            //LanguageCodesNew["ml"] = new List<Regex> { };
-            LanguageCodesNew["ms"] = new List<Regex> { new Regex(".*_may\\.srt$", RegexOptions.Compiled), new Regex(".*_malaysian\\.srt$", RegexOptions.Compiled) };
+            LanguageCodesNew["lv"] = new List<Regex> {
+                new Regex(".*_lav,.*\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_lav\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_latvian\\.srt$", RegexOptions.Compiled)
+            };
+            LanguageCodesNew["lt"] = new List<Regex> {
+                new Regex(".*_lit,.*\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_lit\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_lithuanian\\.srt$", RegexOptions.Compiled)
+            };
+            LanguageCodesNew["mk"] = new List<Regex> {
+                new Regex(".*_mac\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_mac,.*\\.srt$", RegexOptions.Compiled),
+            };
+            LanguageCodesNew["ml"] = new List<Regex> {
+                new Regex(".*_mal\\.srt$", RegexOptions.Compiled)
+            };
+            LanguageCodesNew["ms"] = new List<Regex> {
+                new Regex(".*_may\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_may,.*\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_malaysian\\.srt$", RegexOptions.Compiled)
+            };
             //LanguageCodesNew["mt"] = new List<Regex> { };
             LanguageCodesNew["no"] = new List<Regex>
             {
                 new Regex(".*_nor\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_nor,.*\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_norwegian\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,norwegian\\.srt$", RegexOptions.Compiled),
                 new Regex("^nor\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.nor\\.srt$", RegexOptions.Compiled)
             };
             LanguageCodesNew["nb"] = new List<Regex> {
                 new Regex(".*_nob\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_bokmal\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,bokmal\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.nob\\.srt$", RegexOptions.Compiled),
                 new Regex("^nob\\.srt$", RegexOptions.Compiled)
             };
-            LanguageCodesNew["pl"] = new List<Regex> { new Regex("^pol\\.srt$", RegexOptions.Compiled), new Regex(".*_polish\\.srt$", RegexOptions.Compiled), new Regex(".*_pol\\.srt$", RegexOptions.Compiled),
+            LanguageCodesNew["pl"] = new List<Regex> {
+                new Regex("^pol\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_polish\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_pol\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_pol,.*\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.pol\\.srt$", RegexOptions.Compiled) };
             //LanguageCodesNew["pa"] = new List<Regex> { };
             //LanguageCodesNew["rm"] = new List<Regex> { };
@@ -250,35 +353,73 @@ namespace PlexSubFix
             {
                 new Regex("^romanian\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_romanian\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,romanian\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_rum\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_rum,.*\\.srt$", RegexOptions.Compiled),
                 new Regex("^rum\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.rum\\.srt$", RegexOptions.Compiled)
             };
-            LanguageCodesNew["ru"] = new List<Regex> { new Regex(".*_russian\\.srt$", RegexOptions.Compiled),
-                new Regex(".*\\.rus\\.srt$", RegexOptions.Compiled), new Regex("^rus\\.srt$", RegexOptions.Compiled) };
+            LanguageCodesNew["ru"] = new List<Regex> {
+                new Regex(".*_russian\\.srt$", RegexOptions.Compiled),
+                new Regex(".*\\.rus\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_rus,.*\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_rus\\.srt$", RegexOptions.Compiled),
+                new Regex("^rus\\.srt$", RegexOptions.Compiled)
+            };
             LanguageCodesNew["sr"] = new List<Regex> { new Regex(".*_srp\\.srt$", RegexOptions.Compiled) };
-            LanguageCodesNew["sk"] = new List<Regex> { new Regex(".*_slo\\.srt$", RegexOptions.Compiled), new Regex(".*_slk\\.srt$", RegexOptions.Compiled), new Regex("^slo\\.srt$", RegexOptions.Compiled) };
-            LanguageCodesNew["sl"] = new List<Regex> { new Regex(".*_slovenian\\.srt$", RegexOptions.Compiled), new Regex(".*_slv\\.srt$", RegexOptions.Compiled) };
+            LanguageCodesNew["sk"] = new List<Regex> {
+                new Regex(".*_slo\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_slk\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_slo,.*\\.srt$", RegexOptions.Compiled),
+                new Regex("^slo\\.srt$", RegexOptions.Compiled)
+            };
+            LanguageCodesNew["sl"] = new List<Regex> {
+                new Regex(".*_slovenian\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_slv,.*\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_slv\\.srt$", RegexOptions.Compiled)
+            };
             //LanguageCodesNew["sb"] = new List<Regex> { };
-            LanguageCodesNew["sv"] = new List<Regex> { new Regex(".*_swedish\\.srt$", RegexOptions.Compiled), new Regex(".*_swe\\.srt$", RegexOptions.Compiled), new Regex("^swe\\.srt$", RegexOptions.Compiled),
+            LanguageCodesNew["sv"] = new List<Regex> {
+                new Regex(".*_swedish\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,swedish\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_swe\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_swe,.*\\.srt$", RegexOptions.Compiled),
+                new Regex("^swe\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.swe\\.srt$", RegexOptions.Compiled) };
             LanguageCodesNew["th"] = new List<Regex> {
                 new Regex("^thai\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_thai\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,thai\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.tha\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_tha\\.srt$", RegexOptions.Compiled),
                 new Regex("^tha\\.srt$", RegexOptions.Compiled)
             };
-            LanguageCodesNew["ta"] = new List<Regex> { new Regex(".*_tamil\\.srt$", RegexOptions.Compiled), new Regex(".*_tam\\.srt$", RegexOptions.Compiled) };
-            LanguageCodesNew["te"] = new List<Regex> { new Regex(".*_telugo\\.srt$", RegexOptions.Compiled), new Regex(".*_tel\\.srt$", RegexOptions.Compiled) };
+            LanguageCodesNew["ta"] = new List<Regex> {
+                new Regex(".*_tamil\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_tam,.*\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_tam\\.srt$", RegexOptions.Compiled)
+            };
+            LanguageCodesNew["te"] = new List<Regex> {
+                new Regex(".*_telugo\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_tel,.*\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_tel\\.srt$", RegexOptions.Compiled)
+            };
             LanguageCodesNew["tl"] = new List<Regex> { new Regex(".*_fil\\.srt$", RegexOptions.Compiled) };
             //LanguageCodesNew["ts"] = new List<Regex> { };
             //LanguageCodesNew["tn"] = new List<Regex> { };
-            LanguageCodesNew["tr"] = new List<Regex> { new Regex("^tur\\.srt$", RegexOptions.Compiled), new Regex(".*_turkish\\.srt$", RegexOptions.Compiled), new Regex(".*_tur\\.srt$", RegexOptions.Compiled),
-                new Regex(".*\\.tur\\.srt$", RegexOptions.Compiled) };
+            LanguageCodesNew["tr"] = new List<Regex> {
+                new Regex("^tur\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_turkish\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_tur\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_tur,.*\\.srt$", RegexOptions.Compiled),
+                new Regex(".*\\.tur\\.srt$", RegexOptions.Compiled)
+            };
             LanguageCodesNew["uk"] = new List<Regex>
             {
                 new Regex(".*_ukrainian\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,ukrainian\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_ukr\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_ukr,.*\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.ukr\\.srt$", RegexOptions.Compiled)
             };
             //LanguageCodesNew["ur"] = new List<Regex> { };
@@ -286,7 +427,9 @@ namespace PlexSubFix
             LanguageCodesNew["vi"] = new List<Regex>
             {
                 new Regex(".*_vietnamese\\.srt$", RegexOptions.Compiled),
+                new Regex(".*,vietnamese\\.srt$", RegexOptions.Compiled),
                 new Regex(".*_vie\\.srt$", RegexOptions.Compiled),
+                new Regex(".*_vie,.*\\.srt$", RegexOptions.Compiled),
                 new Regex("^vie\\.srt$", RegexOptions.Compiled),
                 new Regex(".*\\.vie\\.srt$", RegexOptions.Compiled)
             };
@@ -303,8 +446,8 @@ namespace PlexSubFix
             //CheckTVFolder(@"L:\Media\TV Shows");
             //CheckTVFolder(@"O:\Media\TV Shows");
 
-            //FixTvShowNames(@"P:\Media\TV Shows\The Fall (2013)");
-            //FixTvShowSubTitles(@"P:\Media\TV Shows\The Fall (2013)");
+            //FixTvShowNames(@"C:\Share\Downloads\Completed\Ice (2016)");
+            //FixTvShowSubTitles(@"C:\Share\Downloads\Completed\The Brady Kids (1972)");
 
             //CleanCompletedFolder(@"J:\Media\Movies");
             //CheckFolder(@"N:\Media\Movies");
@@ -312,7 +455,10 @@ namespace PlexSubFix
             //CheckFolder(@"U:\Media\Movies");
             //CheckFolder(@"T:\Media\Movies");
 
+
+            //FixTvShowNames(@"C:\Share\PlexNewTV2\TV Shows\Mayday (2003)");
             //CleanCompletedFolder(@"C:\Users\Brad\Downloads\Newshosting");
+
             CleanCompletedFolder(@"H:\Media\Completed");
             //CleanCompletedFolder(@"H:\Media\Music");
             //CleanCompletedFolder(@"H:\Media\Movies");
@@ -324,8 +470,33 @@ namespace PlexSubFix
             FixMovieSubTitles(@"H:\Media\Completed");
             FixTvShowSubTitles(@"H:\Media\Completed");
 
+            // FixTvShowNamesOneOff(new DirectoryInfo(@"C:\Share\Downloads\Completed\Liberty's Kids (2002)\Season 01"));
+            CleanCompletedFolder(@"C:\Share\Downloads\Completed");
+            CleanCompletedFolder(@"C:\Share\Downloads\Upload");
+            CleanCompletedFolder(@"C:\Share\Downloads\Movies");
+            CleanCompletedFolder(@"C:\Share\H\Upload");
 
-            //FixTvShowNames(@"C:\Users\Brad\Downloads\Newshosting");
+            //CleanCompletedFolder(@"C:\Users\bradf\Downloads\Newshosting");
+            //FixTvShowNamesOneOff(new DirectoryInfo(@"C:\Share\Downloads\Completed\Liberty's Kids (2002)\Season 01"));
+            FixTvROMNamesOneOff(new DirectoryInfo(@"C:\Users\bradf\Downloads\Newshosting\Nintendo DS Complete Romset"));
+            //CleanCompletedFolder(@"C:\Share\Downloads\Completed");
+            //CleanCompletedFolder(@"C:\Share\Downloads\Upload");
+            //CleanCompletedFolder(@"C:\Share\Downloads\Movies");
+            //CleanCompletedFolder(@"C:\Share\H\Upload");
+
+
+            //CleanCompletedFolder(@"H:\Media\Music");
+            //CleanCompletedFolder(@"H:\Media\Movies");
+
+
+            //FixMovieSubTitles(@"C:\Share\Downloads\Movies");
+            //FixMovieSubTitles(@"C:\Share\Downloads\Completed");
+            //FixTvShowSubTitles(@"C:\Share\Downloads\Completed");
+
+
+
+            //FixTvShowNames(@"C:\Users\bradf\Downloads\Newshosting\Brotherhood (2006)");
+
             //FixTvShowSubTitles(@"H:\Media\Backlog");
 
 
@@ -413,7 +584,11 @@ namespace PlexSubFix
                 }
             }
 
-            DeleteEmptyFolders(dInfo);
+            var subDirs = dInfo.GetDirectories();
+            foreach (var subDir in subDirs)
+            {
+                DeleteEmptyFolders(subDir);
+            }
         }
 
         public static void FixTvShowNames(string path)
@@ -433,146 +608,249 @@ namespace PlexSubFix
                 _FixTvShowNames(subDir);
             }
 
-            var tvShows = directoryInfo.GetFilesByExtensions(VideoFileExtensions.ToArray());
+            var tvShows = directoryInfo.GetFilesByExtensions(Settings.VideoFileExtensions.ToArray());
 
             Match match;
 
             foreach (var tvShow in tvShows)
             {
-
-                //match = Regex.Match(tvShow.Name, @"^[Ss](\d+)[Ee](\d+)");
-                //if (match.Success)
-                //{
-                //    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                //    if (!folderMatch.Success)
-                //    {
-                //        continue;
-                //    }
-                //    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-
-                //    string season = match.Groups[1].Value.PadLeft(2, '0');
-                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                //    if (folderSeason != season)
-                //    {
-                //        continue;
-                //    }
-
-                //    var badChar = tvShow.Name.Substring(match.Groups[0].Value.Length, 1);
-
-                //    if (badChar == " " || badChar == ".")
-                //    {
-                //        continue;
-                //    }
-                //    if (badChar == "E")
-                //    {
-                //        badChar = tvShow.Name.Substring(match.Groups[0].Value.Length + 1, 1);
-                //        var arr = new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
-                //        if (arr.Contains(badChar))
-                //        {
-                //            continue;
-                //        }
-                //    }
-                //    string destination = string.Format("S{0}E{1} ", season, episode);
-                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                //    continue;
-                //}
-
-                //match = Regex.Match(tvShow.Name, @"sprinter-sgctc[Ss](\d+)[Ee](\d+)");
-                //if (match.Success)
-                //{
-                //    string season = match.Groups[1].Value.PadLeft(2, '0');
-                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                //    string destination = string.Format("aaf-sgctc - S{0}E{1}", season, episode);
-                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                //    continue;
-                //}
-
-
-
                 match = Regex.Match(tvShow.Name, @"[Ss](\d+)[Ee](\d+)");
                 if (match.Success)
                 {
                     continue;
                 }
-                //match = Regex.Match(tvShow.Name, @"- (\d{3}) -");
+
+                var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
+                if (!folderMatch.Success)
+                {
+                    continue;
+                }
+                string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+
+                //match = Regex.Match(tvShow.Name, @"\sSeason (\d{2}) Episode (\d{2})\s");
+                //match = Regex.Match(tvShow.Name, @"Season (\d+) Episode (\d+)");
+                //match = Regex.Match(tvShow.Name, @"\.(\d{2})\.(\d{2})\.");
+                //match = Regex.Match(tvShow.Name, @"EP-(\d+)");
+                //match = Regex.Match(tvShow.Name, @"(\d{3})");
+                //match = Regex.Match(tvShow.Name, @"(\d{2})x(\d{2})");
+                match = Regex.Match(tvShow.Name, @"S(\d{2}) E(\d{2})");
+                if (match.Success)
+                {
+                    //string seasonAndEpisode = match.Groups[1].Value.PadLeft(3, '0');
+                    //string season = seasonAndEpisode.Substring(0, 1).PadLeft(2, '0');
+                    //string episode = seasonAndEpisode.Substring(1, 2);
+
+                    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+                    var intEpisode = int.Parse(episode);
+
+                    //if (folderSeason == "02")
+                    //{
+                    //    intEpisode -= 13;
+                    //}
+                    //if (folderSeason == "03")
+                    //{
+                    //    intEpisode -= 28;
+                    //}
+                    //if (folderSeason == "04")
+                    //{
+                    //    intEpisode -= 68;
+                    //}
+                    //if (folderSeason == "05")
+                    //{
+                    //    intEpisode -= 101;
+                    //}
+                    //if (folderSeason == "06")
+                    //{
+                    //    intEpisode -= 132;5
+                    //}
+                    
+                    string destination = string.Format("S{0}E{1}", folderSeason, intEpisode.ToString().PadLeft(2, '0'));
+                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                    //newFileName = newFileName.Replace("三体-","");
+
+                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                    continue;
+                }
+
+                ////match = Regex.Match(tvShow.Name, @"^[Ss](\d+)[Ee](\d+)");
+                ////if (match.Success)
+                ////{
+                ////    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
+                ////    if (!folderMatch.Success)
+                ////    {
+                ////        continue;
+                ////    }
+                ////    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+
+                ////    string season = match.Groups[1].Value.PadLeft(2, '0');
+                ////    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+                ////    if (folderSeason != season)
+                ////    {
+                ////        continue;
+                ////    }
+
+                ////    var badChar = tvShow.Name.Substring(match.Groups[0].Value.Length, 1);
+
+                ////    if (badChar == " " || badChar == ".")
+                ////    {
+                ////        continue;
+                ////    }
+                ////    if (badChar == "E")
+                ////    {
+                ////        badChar = tvShow.Name.Substring(match.Groups[0].Value.Length + 1, 1);
+                ////        var arr = new List<string> { "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
+                ////        if (arr.Contains(badChar))
+                ////        {
+                ////            continue;
+                ////        }
+                ////    }
+                ////    string destination = string.Format("S{0}E{1} ", season, episode);
+                ////    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                ////    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                ////    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                ////    continue;
+                ////}
+
+                ////match = Regex.Match(tvShow.Name, @"sprinter-sgctc[Ss](\d+)[Ee](\d+)");
+                ////if (match.Success)
+                ////{
+                ////    string season = match.Groups[1].Value.PadLeft(2, '0');
+                ////    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+                ////    string destination = string.Format("aaf-sgctc - S{0}E{1}", season, episode);
+                ////    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                ////    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                ////    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                ////    continue;
+                ////}
+
+
+
+                ////match = Regex.Match(tvShow.Name, @"[Ss](\d+)[Ee](\d+)");
+                ////if (match.Success)
+                ////{
+                ////    continue;
+                ////}
+                ////match = Regex.Match(tvShow.Name, @"- (\d{3}) -");
+                ////if (match.Success)
+                ////{
+                ////    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
+                ////    if (!folderMatch.Success)
+                ////    {
+                ////        continue;
+                ////    }
+                ////    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+
+                ////    string episode = match.Groups[1].Value.PadLeft(2, '0');
+
+                ////    var intEpisode = int.Parse(episode);
+
+                ////    if (folderSeason == "02")
+                ////    {
+                ////        intEpisode -= 5;
+                ////    }
+                ////    if (folderSeason == "03")
+                ////    {
+                ////        intEpisode -= 25;
+                ////    }
+                ////    if (folderSeason == "04")
+                ////    {
+                ////        intEpisode -= 45;
+                ////    }
+
+                ////    string destination = string.Format("- S{0}E{1} -", folderSeason, intEpisode.ToString().PadLeft(2, '0'));
+                ////    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                ////    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                ////    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                ////    continue;
+                ////}
+                ////match = Regex.Match(tvShow.Name, @"SE(\d+) EP(\d+)");
+                ////if (match.Success)
+                ////{
+                ////    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
+                ////    if (!folderMatch.Success)
+                ////    {
+                ////        continue;
+                ////    }
+                ////    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+                ////    string season = match.Groups[1].Value.PadLeft(2, '0');
+
+                ////    int intEpisode = int.Parse(match.Groups[2].Value);
+                ////    string episode = intEpisode.ToString().PadLeft(2, '0');
+
+                ////    if (season == "02")
+                ////    {
+                ////        episode = (intEpisode - 21).ToString().PadLeft(2, '0');
+                ////    }
+
+                ////    if (season == "03")
+                ////    {
+                ////        episode = (intEpisode - 51).ToString().PadLeft(2, '0');
+                ////    }
+
+                ////    if (season == "04")
+                ////    {
+                ////        episode = (intEpisode - 65).ToString().PadLeft(2, '0');
+                ////    }
+
+                ////    if (season != folderSeason)
+                ////    {
+                ////        continue;
+                ////    }
+
+
+                ////    string destination = string.Format("S{0}E{1} - ", season, episode);
+                ////    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                ////    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                ////    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                ////    continue;
+                ////}
+                ////match = Regex.Match(tvShow.Name, @" \- (\d{2}) \- ");
+                ////if (match.Success)
+                ////{
+                ////    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
+                ////    if (!folderMatch.Success)
+                ////    {
+                ////        continue;
+                ////    }
+                ////    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+
+
+                ////    string episode = match.Groups[1].Value.PadLeft(2, '0');
+                ////    int episodeInt = int.Parse(episode);
+                ////    if (folderSeason == "02")
+                ////    {
+                ////        episodeInt = episodeInt - 15;
+                ////        episode = episodeInt.ToString().PadLeft(2, '0');
+                ////    }
+
+                ////    string destination = string.Format(" - S{0}E{1} - ", folderSeason, episode);
+                ////    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                ////    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                ////    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                ////    continue;
+                ////}
+                //match = Regex.Match(tvShow.Name, @"(\d+)e(\d+)-");
                 //if (match.Success)
                 //{
-                //    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                //    if (!folderMatch.Success)
-                //    {
-                //        continue;
-                //    }
-                //    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
 
-                //    string episode = match.Groups[1].Value.PadLeft(2, '0');
-
-                //    var intEpisode = int.Parse(episode);
-
-                //    if (folderSeason == "02")
-                //    {
-                //        intEpisode -= 5;
-                //    }
-                //    if (folderSeason == "03")
-                //    {
-                //        intEpisode -= 25;
-                //    }
-                //    if (folderSeason == "04")
-                //    {
-                //        intEpisode -= 45;
-                //    }
-
-                //    string destination = string.Format("- S{0}E{1} -", folderSeason, intEpisode.ToString().PadLeft(2, '0'));
-                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                //    continue;
-                //}
-                //match = Regex.Match(tvShow.Name, @"SE(\d+) EP(\d+)");
-                //if (match.Success)
-                //{
-                //    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                //    if (!folderMatch.Success)
-                //    {
-                //        continue;
-                //    }
-                //    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-                //    string season = match.Groups[1].Value.PadLeft(2, '0');
-
-                //    int intEpisode = int.Parse(match.Groups[2].Value);
-                //    string episode = intEpisode.ToString().PadLeft(2, '0');
-
-                //    if (season == "02")
-                //    {
-                //        episode = (intEpisode - 21).ToString().PadLeft(2, '0');
-                //    }
-
-                //    if (season == "03")
-                //    {
-                //        episode = (intEpisode - 51).ToString().PadLeft(2, '0');
-                //    }
-
-                //    if (season == "04")
-                //    {
-                //        episode = (intEpisode - 65).ToString().PadLeft(2, '0');
-                //    }
-
-                //    if (season != folderSeason)
-                //    {
-                //        continue;
-                //    }
-
+                //    string season = match.Groups[1].Value.PadLeft(4, '0');
+                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
 
                 //    string destination = string.Format("S{0}E{1} - ", season, episode);
                 //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
@@ -582,24 +860,282 @@ namespace PlexSubFix
                 //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
                 //    continue;
                 //}
-                //match = Regex.Match(tvShow.Name, @" \- (\d{2}) \- ");
+                //match = Regex.Match(tvShow.Name, @"S(\d+)-E(\d+)_");
                 //if (match.Success)
                 //{
-                //    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                //    if (!folderMatch.Success)
+
+                //    string season = match.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+                //    if (season == "02")
                 //    {
-                //        continue;
+                //        var s2 = int.Parse(episode);
+                //        episode = (s2 - 13).ToString().PadLeft(2, '0');
                 //    }
-                //    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+
+                //match = Regex.Match(tvShow.Name, @"Season (\d+) Episode (\d+)");
+                //if (match.Success)
+                //{
+                //    string season = match.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+                //    string destination = string.Format("S{0}E{1}", season, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"Season (\d+) - (\d+)");
+                //if (match.Success)
+                //{
+                //    string season = match.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+                //    string destination = string.Format("S{0}E{1}", season, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"\[(\d+)x(\d+)\]");
+                //if (match.Success)
+                //{
+                //    string season = match.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+                //    string destination = string.Format("S{0}E{1}", season, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"(\d+)x(\d+)");
+                //if (match.Success)
+                //{
+                //    string season = match.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+                //    string destination = string.Format("S{0}E{1}", season, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"[Ss](\d+)\s+[Ee](\d+)");
+                //if (match.Success)
+                //{
+
+                //    string season = match.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+                //    string destination = string.Format("S{0}E{1}", season, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"[Ss](\d+)\.[Ee](\d+)");
+                //if (match.Success)
+                //{
+
+                //    string season = match.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+                //    string destination = string.Format("S{0}E{1}", season, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"^Episode (\d{3})");
+                //if (match.Success)
+                //{
+
 
 
                 //    string episode = match.Groups[1].Value.PadLeft(2, '0');
-                //    int episodeInt = int.Parse(episode);
-                //    if (folderSeason == "02")
+
+                //    string destination = string.Format("S{0}E{1}", folderSeason, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"^Episode (\d{2})");
+                //if (match.Success)
+                //{
+
+
+                //    string episode = match.Groups[1].Value.PadLeft(2, '0');
+
+                //    string destination = string.Format("S{0}E{1}", folderSeason, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"- Episode (\d{2}) -");
+                //if (match.Success)
+                //{
+
+
+                //    string episode = match.Groups[1].Value.PadLeft(2, '0');
+
+                //    string destination = string.Format("- S{0}E{1} -", folderSeason, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"(\d{1})\.(\d{2})");
+                //if (match.Success)
+                //{
+
+                //    string season = match.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[2].Value.PadLeft(2, '0');
+
+
+                //    if (season != folderSeason)
                 //    {
-                //        episodeInt = episodeInt - 15;
-                //        episode = episodeInt.ToString().PadLeft(2, '0');
+                //        continue;
                 //    }
+
+
+                //    string destination = string.Format("S{0}E{1}", season, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @"\.(\d{4})-")))
+                //{
+                //    continue;
+                //}
+                //if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @"(\d{4})")))
+                //{
+                //    continue;
+                //}
+                //if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @"^(\d{3}) ")))
+                //{
+                //    continue;
+                //}
+                //if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @"\.(\d{3})\.")))
+                //{
+                //    continue;
+                //}
+                //if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @" \- (\d{3}) \- ")))
+                //{
+                //    continue;
+                //}
+                //if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @" (\d{3})")))
+                //{
+                //    continue;
+                //}
+                ////if (match.Success)
+                ////{
+                ////    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
+                ////    if (!folderMatch.Success)
+                ////    {
+                ////        continue;
+                ////    }
+                ////    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+
+
+                ////    string total = match.Groups[1].Value.PadLeft(4, '0');
+                ////    string season = total.Substring(0, 2);
+                ////    string episode = total.Substring(2, 2);
+
+                ////    if (folderSeason != season)
+                ////    {
+                ////        continue;
+                ////    }
+
+                ////    string destination = string.Format(" - S{0}E{1} - ", season, episode);
+                ////    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                ////    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                ////    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                ////    continue;
+                ////}
+
+                ////match = Regex.Match(tvShow.Name, @" \- (\d{2}) \- ");
+                ////if (match.Success)
+                ////{
+                ////    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
+                ////    if (!folderMatch.Success)
+                ////    {
+                ////        continue;
+                ////    }
+                ////    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+
+
+                ////    string episode = match.Groups[1].Value.PadLeft(2, '0');
+                ////    int episodeInt = int.Parse(episode);
+                ////    if(folderSeason=="02")
+                ////    {
+                ////        episodeInt = episodeInt - 40;
+                ////        episode= episodeInt.ToString().PadLeft(2, '0');
+                ////    }
+
+                ////    string destination = string.Format(" - S{0}E{1} - ", folderSeason, episode);
+                ////    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                ////    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                ////    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                ////    continue;
+                ////}
+
+                //match = Regex.Match(tvShow.Name, @"^Episode (\d{1})");
+                //if (match.Success)
+                //{
+
+
+                //    string episode = match.Groups[1].Value.PadLeft(2, '0');
+
+                //    string destination = string.Format("S{0}E{1}", folderSeason, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+                //match = Regex.Match(tvShow.Name, @"_eps(\d+)_");
+                //if (match.Success)
+                //{
+
+
+                //    string episode = match.Groups[1].Value.PadLeft(2, '0');
 
                 //    string destination = string.Format(" - S{0}E{1} - ", folderSeason, episode);
                 //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
@@ -609,311 +1145,13 @@ namespace PlexSubFix
                 //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
                 //    continue;
                 //}
-                match = Regex.Match(tvShow.Name, @"(\d+)e(\d+)-");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-                    string season = match.Groups[1].Value.PadLeft(4, '0');
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1} - ", season, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"S(\d+)-E(\d+)_");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-                    string season = match.Groups[1].Value.PadLeft(2, '0');
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                    if (season == "02")
-                    {
-                        var s2 = int.Parse(episode);
-                        episode = (s2 - 13).ToString().PadLeft(2, '0');
-                    }
-
-                    if (season == "03")
-                    {
-                        var s3 = int.Parse(episode);
-                        episode = (s3 - 21).ToString().PadLeft(2, '0');
-                    }
-
-                    if (season != folderSeason)
-                    {
-                        continue;
-                    }
-
-
-                    string destination = string.Format("S{0}E{1} - ", season, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-
-                match = Regex.Match(tvShow.Name, @"Season (\d+) Episode (\d+)");
-                if (match.Success)
-                {
-                    string season = match.Groups[1].Value.PadLeft(2, '0');
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1}", season, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"Season (\d+) - (\d+)");
-                if (match.Success)
-                {
-                    string season = match.Groups[1].Value.PadLeft(2, '0');
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1}", season, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"\[(\d+)x(\d+)\]");
-                if (match.Success)
-                {
-                    string season = match.Groups[1].Value.PadLeft(2, '0');
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1}", season, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"(\d+)x(\d+)");
-                if (match.Success)
-                {
-                    string season = match.Groups[1].Value.PadLeft(2, '0');
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1}", season, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"[Ss](\d+)\s+[Ee](\d+)");
-                if (match.Success)
-                {
-
-                    string season = match.Groups[1].Value.PadLeft(2, '0');
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1}", season, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"[Ss](\d+)\.[Ee](\d+)");
-                if (match.Success)
-                {
-
-                    string season = match.Groups[1].Value.PadLeft(2, '0');
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1}", season, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"^Episode (\d{3})");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-
-
-                    string episode = match.Groups[1].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1}", folderSeason, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"^Episode (\d{2})");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-
-
-                    string episode = match.Groups[1].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1}", folderSeason, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"- Episode (\d{2}) -");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-
-
-                    string episode = match.Groups[1].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("- S{0}E{1} -", folderSeason, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"(\d{1})\.(\d{2})");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-                    string season = match.Groups[1].Value.PadLeft(2, '0');
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
-
-
-                    if (season != folderSeason)
-                    {
-                        continue;
-                    }
-
-
-                    string destination = string.Format("S{0}E{1}", season, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @"\.(\d{4})-")))
-                {
-                    continue;
-                }
-                if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @"(\d{4})")))
-                {
-                    continue;
-                }
-                if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @"^(\d{3}) ")))
-                {
-                    continue;
-                }
-                if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @"\.(\d{3})\.")))
-                {
-                    continue;
-                }
-                if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @" \- (\d{3}) \- ")))
-                {
-                    continue;
-                }
-                if (MatchFourAndThreeDigitYearAndSeason(directoryInfo, tvShow, Regex.Match(tvShow.Name, @" (\d{3})")))
-                {
-                    continue;
-                }
+                //match = Regex.Match(tvShow.Name, @"- Ep. (\d+) -");
                 //if (match.Success)
                 //{
-                //    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                //    if (!folderMatch.Success)
-                //    {
-                //        continue;
-                //    }
-                //    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
 
-
-                //    string total = match.Groups[1].Value.PadLeft(4, '0');
-                //    string season = total.Substring(0, 2);
-                //    string episode = total.Substring(2, 2);
-
-                //    if (folderSeason != season)
-                //    {
-                //        continue;
-                //    }
-
-                //    string destination = string.Format(" - S{0}E{1} - ", season, episode);
-                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                //    continue;
-                //}
-
-                //match = Regex.Match(tvShow.Name, @" \- (\d{2}) \- ");
-                //if (match.Success)
-                //{
-                //    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                //    if (!folderMatch.Success)
-                //    {
-                //        continue;
-                //    }
-                //    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
 
 
                 //    string episode = match.Groups[1].Value.PadLeft(2, '0');
-                //    int episodeInt = int.Parse(episode);
-                //    if(folderSeason=="02")
-                //    {
-                //        episodeInt = episodeInt - 40;
-                //        episode= episodeInt.ToString().PadLeft(2, '0');
-                //    }
 
                 //    string destination = string.Format(" - S{0}E{1} - ", folderSeason, episode);
                 //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
@@ -924,94 +1162,22 @@ namespace PlexSubFix
                 //    continue;
                 //}
 
-                match = Regex.Match(tvShow.Name, @"^Episode (\d{1})");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-
-
-                    string episode = match.Groups[1].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1}", folderSeason, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"_eps(\d+)_");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+                //match = Regex.Match(tvShow.Name, @"(\d{2})\. ");
+                //if (match.Success)
+                //{
 
 
 
-                    string episode = match.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[1].Value.PadLeft(2, '0');
 
-                    string destination = string.Format(" - S{0}E{1} - ", folderSeason, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+                //    string destination = string.Format("S{0}E{1} - ", folderSeason, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
 
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
 
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-                match = Regex.Match(tvShow.Name, @"- Ep. (\d+) -");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-
-
-
-                    string episode = match.Groups[1].Value.PadLeft(2, '0');
-
-                    string destination = string.Format(" - S{0}E{1} - ", folderSeason, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
-
-                match = Regex.Match(tvShow.Name, @"(\d{2})\. ");
-                if (match.Success)
-                {
-                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
-                    if (!folderMatch.Success)
-                    {
-                        continue;
-                    }
-                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
-
-
-
-                    string episode = match.Groups[1].Value.PadLeft(2, '0');
-
-                    string destination = string.Format("S{0}E{1} - ", folderSeason, episode);
-                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
-
-                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
-
-                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
-                    continue;
-                }
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
 
                 //match = Regex.Match(tvShow.Name, @" (\d{2}) ");
                 //if (match.Success)
@@ -1055,6 +1221,87 @@ namespace PlexSubFix
                 //    }
 
                 //    string destination = string.Format(" S{0}E{1} ", season, episode);
+                //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                //    continue;
+                //}
+            }
+        }
+
+        private static void FixTvROMNamesOneOff(DirectoryInfo directoryInfo)
+        {
+            Match match;
+            var roms = directoryInfo.GetFilesByExtensions(new string[] { ".zip" });
+            foreach (var rom in roms)
+            {
+                match = Regex.Match(rom.Name, @"x\d{3} - ");
+                if (match.Success)
+                {
+                    string newFileName = rom.Name.Replace(match.Groups[0].Value, "");
+
+                    Console.WriteLine("Renaming {0} to {1}", rom.Name, newFileName);
+
+                    Move(rom.FullName, rom.FullName.Replace(rom.Name, newFileName));
+                    continue;
+                }
+            }
+        }
+
+        private static void FixTvShowNamesOneOff(DirectoryInfo directoryInfo)
+        {
+            var tvShows = directoryInfo.GetFilesByExtensions(Settings.VideoFileExtensions.ToArray());
+
+            Match match;
+
+            foreach (var tvShow in tvShows)
+            {
+
+                match = Regex.Match(tvShow.Name, @"S01S01[Ee](\d+)");
+                if (match.Success)
+                {
+                    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
+                    if (!folderMatch.Success)
+                    {
+                        continue;
+                    }
+                    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+
+                    string season = match.Groups[1].Value.PadLeft(2, '0');
+                    string episode = match.Groups[1].Value.PadLeft(2, '0');
+
+                    //if (folderSeason != season)
+                    //{
+                    //    continue;
+                    //}
+                    //int episodeInt = int.Parse(episode);
+                    //episodeInt -= 21;
+
+
+                    string destination = string.Format("S{0}E{1}", folderSeason, episode.PadLeft(2, '0'));
+                    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
+
+                    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
+
+                    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
+                    continue;
+                }
+                //match = Regex.Match(tvShow.Name, @" Part (\d+)");
+                //if (match.Success)
+                //{
+                //    var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
+                //    if (!folderMatch.Success)
+                //    {
+                //        continue;
+                //    }
+                //    string folderSeason = folderMatch.Groups[1].Value.PadLeft(2, '0');
+                //    string episode = match.Groups[1].Value.PadLeft(2, '0');
+
+
+                //    int episodeInt = int.Parse(episode);
+                //    string destination = string.Format(" S{0}E{1}", folderSeason, episodeInt.ToString().PadLeft(2, '0'));
                 //    string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
 
                 //    Console.WriteLine("Renaming {0} to {1}", tvShow.Name, newFileName);
@@ -1376,6 +1623,7 @@ namespace PlexSubFix
 
         private static void SearchLanguage(DirectoryInfo directoryInfo, int tvShowsCount, FileInfo tvShow, string search, string altSearch, string code, string extension)
         {
+
             var subTitleDestination = tvShow.FullName.Substring(0, tvShow.FullName.Length - tvShow.Extension.Length) + "." + code + "." + extension;
 
             if (File.Exists(subTitleDestination))
@@ -1461,12 +1709,21 @@ namespace PlexSubFix
 
         private static void SearchLanguage(DirectoryInfo directoryInfo, int tvShowsCount, FileInfo tvShow, List<Regex> search, string code, string extension)
         {
-            var subTitleDestination = tvShow.FullName.Substring(0, tvShow.FullName.Length - tvShow.Extension.Length) + "." + code + "." + extension;
+            //fix double ..
+            var errors = directoryInfo.GetFiles("*" + ".." + extension, SearchOption.AllDirectories);
 
-            if (File.Exists(subTitleDestination))
+            foreach (var error in errors)
             {
-                return;
+                Move(error.FullName, error.FullName.Replace(".." + extension, "." + extension));
             }
+
+
+            //var subTitleDestination = tvShow.FullName.Substring(0, tvShow.FullName.Length - tvShow.Extension.Length) + "." + code + "." + extension;
+
+            //if (File.Exists(subTitleDestination))
+            //{
+            //    return;
+            //}
 
             var match = Regex.Match(tvShow.Name, @"[Ss](\d+)[Ee](\d+)");
             if (!match.Success)
@@ -1474,30 +1731,40 @@ namespace PlexSubFix
                 return;
             }
 
+            //if(tvShow.Name.StartsWith("Masters.of.the.Air.S01E01.1080p.WEBRip.x265-KONTRAST"))
+            //{
+            //    int y = 9;
+            //}
+
+            List<FileInfo> filteredSubTitlesFiles = new List<FileInfo>();
+
             //Case 1: Subtitles are named with S0E0 pattern
             var subTitlesFiles = directoryInfo.GetFiles("*" + match.Groups[0].Value + "*" + "." + extension, SearchOption.AllDirectories).ToList();
             subTitlesFiles = subTitlesFiles.Where(p => search.Any(s => s.IsMatch(p.Name.ToLowerInvariant()))).ToList();
 
-            subTitlesFiles = subTitlesFiles.Distinct(new FileInfoComparer()).ToList();
-            if (subTitlesFiles.Count > 0)
-            {
-                RenameSubTitlesBasedOnLanguage(tvShow, code, subTitlesFiles);
-                return;
-            }
+            filteredSubTitlesFiles.AddRange(subTitlesFiles);
+
+            //subTitlesFiles = subTitlesFiles.Distinct(new FileInfoComparer()).ToList();
+            //if (subTitlesFiles.Count > 0)
+            //{
+            //    RenameSubTitlesBasedOnLanguage(tvShow, code, subTitlesFiles);
+            //    return;
+            //}
 
             //Case 2: The folder only has one episode. All subtitles are for that
             if (tvShowsCount == 1)
             {
                 subTitlesFiles = directoryInfo.GetFiles("*." + extension, SearchOption.AllDirectories).Where(p => p.Length > minFileSize).OrderBy(p => p.Length).ToList();
-
                 subTitlesFiles = subTitlesFiles.Where(p => search.Any(s => s.IsMatch(p.Name.ToLowerInvariant()))).ToList();
 
-                subTitlesFiles = subTitlesFiles.Distinct(new FileInfoComparer()).ToList();
-                if (subTitlesFiles.Count > 0)
-                {
-                    RenameSubTitlesBasedOnLanguage(tvShow, code, subTitlesFiles);
-                    return;
-                }
+                filteredSubTitlesFiles.AddRange(subTitlesFiles);
+
+                //subTitlesFiles = subTitlesFiles.Distinct(new FileInfoComparer()).ToList();
+                //if (subTitlesFiles.Count > 0)
+                //{
+                //    RenameSubTitlesBasedOnLanguage(tvShow, code, subTitlesFiles);
+                //    return;
+                //}
             }
 
             //Case 3: multiple tv shows, subtitles not named with S0E0 pattern. They are in a subfolder with s0e0 pattern.
@@ -1511,13 +1778,23 @@ namespace PlexSubFix
                     subTitlesFiles = subdir.GetFiles("*." + extension, SearchOption.AllDirectories).Where(p => p.Length > minFileSize).OrderBy(p => p.Length).ToList();
                     subTitlesFiles = subTitlesFiles.Where(p => search.Any(s => s.IsMatch(p.Name.ToLowerInvariant()))).ToList();
 
-                    subTitlesFiles = subTitlesFiles.Distinct(new FileInfoComparer()).ToList();
-                    if (subTitlesFiles.Count > 0)
-                    {
-                        RenameSubTitlesBasedOnLanguage(tvShow, code, subTitlesFiles);
-                        return;
-                    }
+                    filteredSubTitlesFiles.AddRange(subTitlesFiles);
+
+                    //subTitlesFiles = subTitlesFiles.Distinct(new FileInfoComparer()).ToList();
+                    //if (subTitlesFiles.Count > 0)
+                    //{
+                    //    RenameSubTitlesBasedOnLanguage(tvShow, code, subTitlesFiles);
+                    //    return;
+                    //}
                 }
+            }
+
+            if (filteredSubTitlesFiles.Count > 0)
+            {
+                filteredSubTitlesFiles = filteredSubTitlesFiles.Distinct(new FileInfoComparer()).ToList();
+
+                RenameSubTitlesBasedOnLanguage(tvShow, code, filteredSubTitlesFiles);
+                return;
             }
         }
 
@@ -1580,7 +1857,7 @@ namespace PlexSubFix
             string destination = string.Format(" - S{0}E{1} - ", season, episode);
             string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
 
-            if (VideoFileExtensions.All(p => !newFileName.EndsWith(p)))
+            if (Settings.VideoFileExtensions.All(p => !newFileName.EndsWith(p)))
             {
                 throw new Exception("Invalid File Name");
             }
@@ -1605,10 +1882,11 @@ namespace PlexSubFix
 
             public override int GetHashCode(FileInfo obj)
             {
-                return obj.GetHashCode();
+                return obj.FullName.GetHashCode();
             }
         }
     }
+
 
     public static class ExtensionMethods
     {
@@ -1622,4 +1900,5 @@ namespace PlexSubFix
             return files.Where(f => extensions.Contains(f.Extension.ToLower()));
         }
     }
+
 }

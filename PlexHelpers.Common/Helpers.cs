@@ -173,7 +173,9 @@ namespace PlexHelpers.Common
                         //    }
                         //}
 
-                        if (!string.IsNullOrWhiteSpace(plexMovie.IMDB))
+
+                        if(!string.IsNullOrWhiteSpace(plexMovie.IMDB))
+
                         {
                             plexMovie.MovieFolderName += " {" + plexMovie.IMDB + "}";
                         }
@@ -357,6 +359,42 @@ namespace PlexHelpers.Common
 
             return newTVShows;
         }
+
+
+        public static List<PlexCollectionTVShow> ReadTVShowBackupCollectionCSV(string filePath)
+        {
+            var newTVShows = new List<PlexCollectionTVShow>();
+
+            var tvShows = File.ReadAllLines(filePath);
+
+            for (var i = 0; i < tvShows.Length; i++)
+            {
+                TextFieldParser parser = new TextFieldParser(new StringReader(tvShows[i]))
+                {
+                    HasFieldsEnclosedInQuotes = true
+                };
+                parser.SetDelimiters(",");
+
+                string[] parts = null;
+
+                while (!parser.EndOfData)
+                {
+                    parts = parser.ReadFields();
+                }
+
+                try
+                {
+                    newTVShows.Add(PlexCollectionTVShow.ParseBackup(parts));
+                }
+                catch (Exception e)
+                {
+                    int u = 0;
+                }
+            }
+
+            return newTVShows;
+        }
+
 
         public static List<PlexCollectionTrack> ReadMusicCollectionCSV(string filePath)
         {

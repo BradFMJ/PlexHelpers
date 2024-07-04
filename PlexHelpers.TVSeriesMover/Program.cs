@@ -28,7 +28,7 @@ namespace PlexHelpers.TVSeriesMover
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
                 AllowAutoRedirect = false
             });
-            _client.BaseAddress = new Uri("http://192.168.1.207:8081/home/");
+            _client.BaseAddress = new Uri("http://localhost:8081/home/");
 
             _tvShows = Helpers.ReadMedusaTVShowCSV("C:\\Share\\H\\medusa_tvshows.csv");
             _episodes = Helpers.ReadMedusaEpisodeCSV("C:\\Share\\H\\medusa_episodes.csv");
@@ -52,9 +52,14 @@ namespace PlexHelpers.TVSeriesMover
             foreach (var tvShow in _tvShows)
             {
                 //if (tvShow.HasAllEpisodes && (tvShow.HasAllSubtitles || tvShow.AllSubtitlesRecentlySearched))
+
                 if (tvShow.HasAllEpisodes || 1 == 1)
                 //if (tvShow.location.StartsWith("C:\\Share\\PlexNewTV3"))
                 {
+
+
+
+
                     count++;
 
                     DirectoryInfo tvshowLocation = Helpers.SeriesFolderNameFixer(tvShow.location);
@@ -124,7 +129,9 @@ namespace PlexHelpers.TVSeriesMover
                             try
                             {
                                 Directory.Move(tvshowLocation.FullName, targetDirectory);
+
                                 //Directory.Delete(tvshowLocation.FullName, true);
+
 
                             }
                             catch (Exception ex)
