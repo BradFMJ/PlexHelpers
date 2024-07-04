@@ -455,6 +455,7 @@ namespace PlexSubFix
             //CheckFolder(@"U:\Media\Movies");
             //CheckFolder(@"T:\Media\Movies");
 
+
             //FixTvShowNames(@"C:\Share\PlexNewTV2\TV Shows\Mayday (2003)");
             //CleanCompletedFolder(@"C:\Users\Brad\Downloads\Newshosting");
             // FixTvShowNamesOneOff(new DirectoryInfo(@"C:\Share\Downloads\Completed\Liberty's Kids (2002)\Season 01"));
@@ -462,15 +463,26 @@ namespace PlexSubFix
             CleanCompletedFolder(@"C:\Share\Downloads\Upload");
             CleanCompletedFolder(@"C:\Share\Downloads\Movies");
             CleanCompletedFolder(@"C:\Share\H\Upload");
+
+            //CleanCompletedFolder(@"C:\Users\bradf\Downloads\Newshosting");
+            //FixTvShowNamesOneOff(new DirectoryInfo(@"C:\Share\Downloads\Completed\Liberty's Kids (2002)\Season 01"));
+            FixTvROMNamesOneOff(new DirectoryInfo(@"C:\Users\bradf\Downloads\Newshosting\Nintendo DS Complete Romset"));
+            //CleanCompletedFolder(@"C:\Share\Downloads\Completed");
+            //CleanCompletedFolder(@"C:\Share\Downloads\Upload");
+            //CleanCompletedFolder(@"C:\Share\Downloads\Movies");
+            //CleanCompletedFolder(@"C:\Share\H\Upload");
+
             //CleanCompletedFolder(@"H:\Media\Music");
             //CleanCompletedFolder(@"H:\Media\Movies");
 
 
-            FixMovieSubTitles(@"C:\Share\Downloads\Movies");
-            FixMovieSubTitles(@"C:\Share\Downloads\Completed");
-            FixTvShowSubTitles(@"C:\Share\Downloads\Completed");
+            //FixMovieSubTitles(@"C:\Share\Downloads\Movies");
+            //FixMovieSubTitles(@"C:\Share\Downloads\Completed");
+            //FixTvShowSubTitles(@"C:\Share\Downloads\Completed");
 
 
+
+            //FixTvShowNames(@"C:\Users\bradf\Downloads\Newshosting\Brotherhood (2006)");
 
             //FixTvShowSubTitles(@"H:\Media\Backlog");
 
@@ -1203,6 +1215,25 @@ namespace PlexSubFix
                 //    Move(tvShow.FullName, tvShow.FullName.Replace(tvShow.Name, newFileName));
                 //    continue;
                 //}
+            }
+        }
+
+        private static void FixTvROMNamesOneOff(DirectoryInfo directoryInfo)
+        {
+            Match match;
+            var roms = directoryInfo.GetFilesByExtensions(new string[] { ".zip" });
+            foreach (var rom in roms)
+            {
+                match = Regex.Match(rom.Name, @"x\d{3} - ");
+                if (match.Success)
+                {
+                    string newFileName = rom.Name.Replace(match.Groups[0].Value, "");
+
+                    Console.WriteLine("Renaming {0} to {1}", rom.Name, newFileName);
+
+                    Move(rom.FullName, rom.FullName.Replace(rom.Name, newFileName));
+                    continue;
+                }
             }
         }
 

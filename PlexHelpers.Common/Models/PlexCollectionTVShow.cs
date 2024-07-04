@@ -47,6 +47,24 @@ namespace PlexHelpers.Common.Models
             return plexCollectionTVShow;
         }
 
+        public static PlexCollectionTVShow ParseBackup(string[] parts)
+        {
+            var plexCollectionTVShow = new PlexCollectionTVShow
+            {
+                CollectionName = parts[3],
+                Title = parts[1]
+            };
+
+            int parseInt;
+            if (parts.Length > 2 && int.TryParse(parts[2], out parseInt))
+            {
+                plexCollectionTVShow.Year = parseInt;
+            }
+
+
+            return plexCollectionTVShow;
+        }
+
         public override bool Equals(object obj)
         {
             return Equals(obj as PlexCollectionTVShow);

@@ -35,7 +35,7 @@ namespace PlexHelpers.TVSeriesCollectionImporter
         {
 
             var plexKey = File.ReadAllText("plex-key.txt");
-            host = plexKey.Split(':')[0]; 
+            host = plexKey.Split(':')[0];
             plexToken = plexKey.Split(':')[1];
 
             HttpClient httClient = new HttpClient();
@@ -45,12 +45,32 @@ namespace PlexHelpers.TVSeriesCollectionImporter
 
             _plexImportTVShows = Helpers.ReadTVShowCollectionCSV(_plexCollectionTVShowImportListPath);
 
+            _plexImportTVShows = new List<PlexCollectionTVShow>();
+            var wow = Helpers.ReadTVShowBackupCollectionCSV(@"C:\Share\H\import-tv-from-backup.csv");
+            foreach (var line in wow)
+            {
+                if (string.IsNullOrWhiteSpace(line.CollectionName))
+                {
+                    continue;
+                }
+                foreach (var entry in line.CollectionName.Split('|'))
+                {
+                    _plexImportTVShows.Add(new PlexCollectionTVShow
+                    {
+                        Year = line.Year,
+                        Title = line.Title,
+                        CollectionName = entry
+                    });
+                }
+            }
+
+
             var tvShowsNotFound = new List<PlexCollectionTVShow>();
 
             _plexCollections = JsonConvert.DeserializeObject<List<CollectionResponse>>(File.ReadAllText(@"C:\imdb\collections-tv.json"));
 
 
-            Dictionary<string,string> studioMappings = new Dictionary<string, string>();
+            Dictionary<string, string> studioMappings = new Dictionary<string, string>();
 
             var studioMappingLines = File.ReadAllLines("C:\\imdb\\tv-show-mapping.csv");
 
@@ -71,7 +91,7 @@ namespace PlexHelpers.TVSeriesCollectionImporter
 
                 try
                 {
-                    if (parts.Length >1)
+                    if (parts.Length > 1)
                     {
                         studioMappings[parts[0]] = parts[1];
                     }
@@ -84,7 +104,7 @@ namespace PlexHelpers.TVSeriesCollectionImporter
 
             foreach (var plexTVShow in _plexTVShows)
             {
-                if(plexTVShow.Title == "The Fairly OddParents")
+                if (plexTVShow.Title == "The Fairly OddParents")
                 {
                     int i = 0;
                 }
@@ -113,6 +133,7 @@ namespace PlexHelpers.TVSeriesCollectionImporter
                 }
                 else
                 {
+                    studioMappings.Add(plexTVShow.Studio, "");
                     Console.WriteLine("No Match for Studio {0}", plexTVShow.Studio);
                 }
             }
@@ -144,10 +165,6 @@ namespace PlexHelpers.TVSeriesCollectionImporter
 
                     #region Match Collection Import TV Show to existing Plex Collection
 
-                    if (tvShowToImport.CollectionName.Contains("Apple")) 
-                    {
-                        int h = 0;
-                    }
                     if (!string.IsNullOrWhiteSpace(tvShowToImport.CollectionKey))
                     {
                         targetPlexCollection = _plexCollections.SingleOrDefault(p => p.MediaContainer.Key == tvShowToImport.CollectionKey);
@@ -156,10 +173,10 @@ namespace PlexHelpers.TVSeriesCollectionImporter
                     {
                         string studioCollection2 = null;
                         //bool isFound = studioMappings.TryGetValue(tvShowToImport.CollectionName, out studioCollection);
-                        if(studioMappings.ContainsKey(tvShowToImport.CollectionName))
+                        if (studioMappings.ContainsKey(tvShowToImport.CollectionName))
                         {
                             studioCollection2 = studioMappings[tvShowToImport.CollectionName];
-                            if(string.IsNullOrWhiteSpace(studioCollection2))
+                            if (string.IsNullOrWhiteSpace(studioCollection2))
                             {
                                 studioCollection2 = tvShowToImport.CollectionName;
                             }
@@ -262,7 +279,7 @@ namespace PlexHelpers.TVSeriesCollectionImporter
                         //Path = "/library/sections/4/all",
                         Query = collectionAddRequest.ToUrlString()
                     };
-                    
+
                     using (var request = new HttpRequestMessage())
                     {
                         request.RequestUri = url.Uri;
@@ -285,6 +302,14 @@ namespace PlexHelpers.TVSeriesCollectionImporter
 
 
             }
+
+            var lines = new List<string>();
+
+            foreach (var studioMapping in studioMappings.OrderBy(p => p.Key))
+            {
+                lines.Add(Helpers.EscapeCsvField(studioMapping.Key) + "," + Helpers.EscapeCsvField(studioMapping.Value));
+            }
+            File.WriteAllLines(@"C:\\imdb\\tv-show-mapping.csv", lines);
 
             Helpers.WriteTVShowCollectionCSV(_plexCollectionTVShowImportListPath, tvShowsNotFound);
 
