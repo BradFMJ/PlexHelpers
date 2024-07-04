@@ -13,8 +13,8 @@ namespace PlexHelpers.TVSeriesMover
     {
         private static bool CanMove = true;
         private static bool CanDelete = true;
-        private static string _targetDrive = "Y";
-        private static string _drivePath = @":\Media\TV Shows";
+        private static string _targetDrive = "A";
+        private static string _drivePath = @":\Media\TV Shows Migrate";
 
         private static List<TVShow> _tvShows;
         private static List<Episode> _episodes;
@@ -30,8 +30,8 @@ namespace PlexHelpers.TVSeriesMover
             });
             _client.BaseAddress = new Uri("http://192.168.1.207:8081/home/");
 
-            _tvShows = Helpers.ReadMedusaTVShowCSV("C:\\imdb\\medusa_tvshows.csv");
-            _episodes = Helpers.ReadMedusaEpisodeCSV("C:\\imdb\\medusa_episodes.csv");
+            _tvShows = Helpers.ReadMedusaTVShowCSV("C:\\Share\\H\\medusa_tvshows.csv");
+            _episodes = Helpers.ReadMedusaEpisodeCSV("C:\\Share\\H\\medusa_episodes.csv");
 
             _episodes = _episodes.Where(p => p.season != 0).ToList();
 
@@ -41,16 +41,19 @@ namespace PlexHelpers.TVSeriesMover
             {
                 tvShow.Episodes = _episodes.Where(p => p.showid == tvShow.indexer_id && p.indexer == tvShow.indexer).ToList();
             }
-            _tvShows = _tvShows.Where(p => p.HasAllEpisodes).OrderBy(p => p.SeriesSizeMB).ToList();
+            _tvShows = _tvShows.OrderBy(p => p.SeriesSizeMB).ToList();
+            //_tvShows = _tvShows.Where(p => p.HasAllEpisodes).OrderBy(p => p.SeriesSizeMB).ToList();
 
-            _tvShows = _tvShows.Where(p => p.HasAllSubtitles || p.AllSubtitlesRecentlySearched).OrderBy(p => p.SeriesSizeMB).ToList();
+            // _tvShows = _tvShows.Where(p => p.HasAllSubtitles || p.AllSubtitlesRecentlySearched).OrderBy(p => p.SeriesSizeMB).ToList();
 
             int totalCount = _tvShows.Count;
             int count = 0;
             ulong totalMBMoved = 0;
             foreach (var tvShow in _tvShows)
             {
-                if (tvShow.HasAllEpisodes && (tvShow.HasAllSubtitles || tvShow.AllSubtitlesRecentlySearched))
+                //if (tvShow.HasAllEpisodes && (tvShow.HasAllSubtitles || tvShow.AllSubtitlesRecentlySearched))
+                if (tvShow.HasAllEpisodes || 1 == 1)
+                //if (tvShow.location.StartsWith("C:\\Share\\PlexNewTV3"))
                 {
                     count++;
 
@@ -62,8 +65,8 @@ namespace PlexHelpers.TVSeriesMover
                     {
                         folderName = folderName + " (" + tvShow.startyear + ")";
                     }
-
                     var targetDirectory = _targetDrive + _drivePath + "\\" + folderName;
+                    //var targetDirectory2 = "C:\\Share\\tvshows\\1080P\\" + folderName;
 
 
                     if (!tvshowLocation.Exists)
@@ -99,10 +102,16 @@ namespace PlexHelpers.TVSeriesMover
                             Console.WriteLine("{0}/{1} CANNOT MOVE {2} to {3}. Target Directory Exists.", count, totalCount, tvShow.show_name, targetDirectory);
                             continue;
                         }
+                        //DirectoryInfo di3 = new DirectoryInfo(targetDirectory2);
+                        //if (di3.Exists)
+                        //{
+                        //    Console.WriteLine("{0}/{1} CANNOT MOVE {2} to {3}. Target Directory Exists.", count, totalCount, tvShow.show_name, targetDirectory2);
+                        //    continue;
+                        //}
 
                         totalMBMoved += (ulong)tvShow.SeriesSizeMB;
                         Console.WriteLine("{0}/{1}: {2} {3} ({4})", count, totalCount, tvShow.show_name, tvshowLocation.FullName, tvShow.SeriesSizeMB);
-                        Helpers.DirectoryCopy(tvshowLocation.FullName, targetDirectory, true);
+                        //Helpers.DirectoryCopy(tvshowLocation.FullName, targetDirectory, true);
 
                         //Remove From Medusa
                         string requestUri = "deleteShow?showslug=" + indexString + tvShow.indexer_id;
@@ -110,15 +119,12 @@ namespace PlexHelpers.TVSeriesMover
 
                         string result = response.Content.ReadAsStringAsync().Result;
 
-                        if (response.StatusCode != HttpStatusCode.Found)
-                        {
-
-                        }
-                        if (CanDelete)
+                        if (response.StatusCode == HttpStatusCode.OK && CanDelete)
                         {
                             try
                             {
-                                Directory.Delete(tvshowLocation.FullName, true);
+                                Directory.Move(tvshowLocation.FullName, targetDirectory);
+                                //Directory.Delete(tvshowLocation.FullName, true);
 
                             }
                             catch (Exception ex)

@@ -24,8 +24,9 @@ namespace PlexHelpers.PlexIMDBScraper
         {
             HttpClient httClient = new HttpClient();
 
-            _plexMaps = Helpers.ReadPlexMapCSV("C:\\imdb\\plex-map.csv");
-            _plexMovies = Helpers.ReadPlexMovieCSV("C:\\imdb\\plex-movies.csv", _plexMaps);
+            _plexMaps = Helpers.ReadPlexMapCSV("C:\\Share\\H\\plex-map.csv");
+            //_plexMovies = Helpers.ReadPlexMovieCSV("C:\\Share\\H\\plex-movies.csv", _plexMaps);
+            _plexMovies = Helpers.ReadPlexMovieCSV("C:\\Share\\H\\plex-movies.csv");
 
             var plexKey = File.ReadAllText("plex-key.txt");
             host = plexKey.Split(':')[0];
@@ -81,9 +82,10 @@ namespace PlexHelpers.PlexIMDBScraper
                             };
                             if (Uri.TryCreate(plexIMDBMap.PlexGuid, UriKind.Absolute, out parseUri))
                             {
-                                plexIMDBMap.Plex = parseUri.PathAndQuery.Replace(@"/","");
+                                plexIMDBMap.Plex = parseUri.PathAndQuery.Replace(@"/", "");
+                                movie.Plex = plexIMDBMap.Plex;
                             }
-                            if(metadata.Guid == null)
+                            if (metadata.Guid == null)
                             {
                                 continue;
                             }
@@ -96,20 +98,24 @@ namespace PlexHelpers.PlexIMDBScraper
                                     if (parseUri.Scheme == "imdb")
                                     {
                                         plexIMDBMap.IMDB = parseUri.Host;
+                                        movie.IMDB = plexIMDBMap.IMDB;
                                     }
                                     if (parseUri.Scheme == "tmdb")
                                     {
                                         plexIMDBMap.TMDB = parseUri.Host;
+                                        movie.TMDB = plexIMDBMap.TMDB;
                                     }
                                     if (parseUri.Scheme == "tvdb")
                                     {
                                         plexIMDBMap.TVDB = parseUri.Host;
+                                        movie.TVDB = plexIMDBMap.TVDB;
                                     }
                                 }
                             }
 
                             _plexMaps.Add(plexIMDBMap);
-                           // Helpers.WritePlexMapCSV("C:\\imdb\\plex-map.csv", _plexMaps);
+                            File.AppendAllLines("C:\\Share\\H\\plex-map.csv", new List<string> { Helpers.EscapeCsvField(plexIMDBMap.PlexGuid) + "," + Helpers.EscapeCsvField(plexIMDBMap.Plex) + "," + Helpers.EscapeCsvField(plexIMDBMap.IMDB) + "," + Helpers.EscapeCsvField(plexIMDBMap.TMDB) + "," + Helpers.EscapeCsvField(plexIMDBMap.TVDB) });
+                            Helpers.WritePlexMapCSV("C:\\imdb\\plex-map.csv", _plexMaps);
                         }
                     }
                 }
@@ -122,8 +128,30 @@ namespace PlexHelpers.PlexIMDBScraper
                     count++;
                 }
             }
+            Helpers.WritePlexMapCSV("C:\\Share\\H\\plex-map.csv", _plexMaps);
 
-            Helpers.WritePlexMapCSV("C:\\imdb\\plex-map.csv", _plexMaps);
+            foreach (var plexMovie in _plexMovies)
+            {
+                var map = _plexMaps.FirstOrDefault(p => p.PlexGuid == plexMovie.Guid);
+                if (map != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(map.IMDB))
+                    {
+                        plexMovie.IMDB = map.IMDB;
+                    }
+                    if (!string.IsNullOrWhiteSpace(map.TMDB))
+                    {
+                        plexMovie.TMDB = map.TMDB;
+                    }
+                    if (!string.IsNullOrWhiteSpace(map.Plex))
+                    {
+                        plexMovie.Plex = map.Plex;
+                    }
+                }
+            }
+
+
+            Helpers.WritePlexMovieCSV("C:\\Share\\H\\plex-movies.csv", _plexMovies);
         }
     }
 }

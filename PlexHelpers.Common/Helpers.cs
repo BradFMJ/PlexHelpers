@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using PlexHelpers.Common.Medusa;
 using System.Linq;
+using System.Dynamic;
 
 namespace PlexHelpers.Common
 {
@@ -44,7 +45,7 @@ namespace PlexHelpers.Common
             return newTVShows;
         }
 
-        public static List<PlexMovie> ReadPlexMovieCSV(string filePath, List<PlexIMDBMap> plexMaps)
+        public static List<PlexMovie> ReadPlexMovieCSV(string filePath)
         {
             var newMovies = new List<PlexMovie>();
 
@@ -72,7 +73,10 @@ namespace PlexHelpers.Common
                         VideoCodec = parts[9].ToLowerInvariant(),
                         AudioCodec = parts[10].ToLowerInvariant(),
                         FullFileName = parts[12],
-                        Hash = parts[13].ToLowerInvariant()
+                        Hash = parts[13].ToLowerInvariant(),
+                        IMDB = parts[16].ToLowerInvariant(),
+                        TMDB = parts[17].ToLowerInvariant(),
+                        Plex = parts[18].ToLowerInvariant()
                     };
 
                     plexMovie.CompareTitle = plexMovie.Title.Replace(",", "").Replace(":", "").Replace("'", "").Replace("-", "").Replace("  ", " ").ToLowerInvariant();
@@ -152,24 +156,24 @@ namespace PlexHelpers.Common
                             plexMovie.IMDB = parts[11];
                         }
 
-                        var map = plexMaps.FirstOrDefault(p => p.PlexGuid == plexMovie.Guid);
-                        if (map != null)
-                        {
-                            if (!string.IsNullOrWhiteSpace(map.IMDB))
-                            {
-                                plexMovie.IMDB = map.IMDB;
-                            }
-                            if (!string.IsNullOrWhiteSpace(map.TMDB))
-                            {
-                                plexMovie.TMDB = map.TMDB;
-                            }
-                            if (!string.IsNullOrWhiteSpace(map.Plex))
-                            {
-                                plexMovie.Plex = map.Plex;
-                            }
-                        }
+                        //var map = plexMaps.FirstOrDefault(p => p.PlexGuid == plexMovie.Guid);
+                        //if (map != null)
+                        //{
+                        //    if (!string.IsNullOrWhiteSpace(map.IMDB))
+                        //    {
+                        //        plexMovie.IMDB = map.IMDB;
+                        //    }
+                        //    if (!string.IsNullOrWhiteSpace(map.TMDB))
+                        //    {
+                        //        plexMovie.TMDB = map.TMDB;
+                        //    }
+                        //    if (!string.IsNullOrWhiteSpace(map.Plex))
+                        //    {
+                        //        plexMovie.Plex = map.Plex;
+                        //    }
+                        //}
 
-                        if(!string.IsNullOrWhiteSpace(plexMovie.IMDB))
+                        if (!string.IsNullOrWhiteSpace(plexMovie.IMDB))
                         {
                             plexMovie.MovieFolderName += " {" + plexMovie.IMDB + "}";
                         }
@@ -184,6 +188,38 @@ namespace PlexHelpers.Common
             }
 
             return newMovies;
+        }
+
+        public static void WritePlexMovieCSV(string filePath, List<PlexMovie> movies)
+        {
+            var lines = new List<string>();
+
+            foreach (var movie in movies)
+            {
+                lines.Add(Helpers.EscapeCsvField(movie.Title)
+                    + "," + (movie.Year.HasValue ? movie.Year.Value.ToString() : "")
+                    + "," + movie.Size
+                    + "," + movie.Width
+                    + "," + movie.Height
+                    + "," + movie.DisplayAspectRatio
+                    + "," + movie.BitRate
+                    + "," + movie.AudioChannels
+                    + "," + Helpers.EscapeCsvField(movie.Container)
+                    + "," + Helpers.EscapeCsvField(movie.VideoCodec)
+                    + "," + Helpers.EscapeCsvField(movie.AudioCodec)
+                    + "," + Helpers.EscapeCsvField(movie.Guid)
+                    + "," + Helpers.EscapeCsvField(movie.FullFileName)
+                    + "," + Helpers.EscapeCsvField(movie.Hash)
+                    + "," + movie.MetadataId
+                    + "," + movie.Duration
+                    + "," + Helpers.EscapeCsvField(movie.IMDB)
+                    + "," + Helpers.EscapeCsvField(movie.TMDB)
+                    + "," + Helpers.EscapeCsvField(movie.Plex)
+
+                    );
+            }
+
+            File.WriteAllLines(filePath, lines);
         }
 
         public static List<PlexIMDBMap> ReadPlexMapCSV(string filePath)
@@ -320,6 +356,40 @@ namespace PlexHelpers.Common
             }
 
             return newTVShows;
+        }
+
+        public static List<PlexCollectionTrack> ReadMusicCollectionCSV(string filePath)
+        {
+            var newTracks = new List<PlexCollectionTrack>();
+
+            var tracks = File.ReadAllLines(filePath);
+
+            for (var i = 0; i < tracks.Length; i++)
+            {
+                TextFieldParser parser = new TextFieldParser(new StringReader(tracks[i]))
+                {
+                    HasFieldsEnclosedInQuotes = true
+                };
+                parser.SetDelimiters(",");
+
+                string[] parts = null;
+
+                while (!parser.EndOfData)
+                {
+                    parts = parser.ReadFields();
+                }
+
+                try
+                {
+                    newTracks.Add(PlexCollectionTrack.Parse(parts));
+                }
+                catch (Exception e)
+                {
+                    int u = 0;
+                }
+            }
+
+            return newTracks;
         }
 
         public static void WriteCollectionCSV(string filePath, List<PlexCollectionMovie> movies)
@@ -708,7 +778,7 @@ namespace PlexHelpers.Common
         {
             DirectoryInfo di = new DirectoryInfo(path);
 
-            if (path.StartsWith("C:\\PlexNewTV3"))
+            if (path.StartsWith("C:\\Share\\PlexNewTV3"))
             {
                 di = new DirectoryInfo("P:\\Media\\TV Shows\\" + di.Name);
             }
@@ -716,16 +786,28 @@ namespace PlexHelpers.Common
             {
                 di = new DirectoryInfo("A:\\Media\\TV Shows\\" + di.Name);
             }
-            if (path.StartsWith("C:\\PlexNewTV2"))
+            if (path.StartsWith("C:\\Share\\PlexNewTV2"))
             {
                 di = new DirectoryInfo("I:\\Media\\TV Shows\\" + di.Name);
             }
-            if (path.StartsWith("C:\\Media3\\TV Shows"))
+            if (path.StartsWith("C:\\Share\\PlexNewTV1"))
             {
                 di = new DirectoryInfo("K:\\Media\\TV Shows\\" + di.Name);
             }
+            if (path.StartsWith("C:\\Media\\TV Shows"))
+            {
+                di = new DirectoryInfo("H:\\Media\\TV Shows\\" + di.Name);
+            }
 
             return di;
+        }
+
+        public static bool DoesPropertyExist(dynamic settings, string name)
+        {
+            if (settings is ExpandoObject)
+                return ((IDictionary<string, object>)settings).ContainsKey(name);
+
+            return settings.GetType().GetProperty(name) != null;
         }
     }
 }
