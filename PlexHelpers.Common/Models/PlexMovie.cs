@@ -9,7 +9,7 @@ namespace PlexHelpers.Common.Models
         public string Guid { get; set; }
         public string CompareTitle { get; set; }
         public int? Year { get; set; }
-        public int Size { get; set; }
+        public long Size { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
         public decimal DisplayAspectRatio { get; set; }
