@@ -34,8 +34,8 @@ namespace PlexHelpers.Common.Models
         public override string ToString()
         {
             return Helpers.EscapeCsvField(CollectionName) + "," +
-                   Helpers.EscapeCsvField(Artist) + "," + 
-                   Helpers.EscapeCsvField(Album) + "," + 
+                   Helpers.EscapeCsvField(Artist) + "," +
+                   Helpers.EscapeCsvField(Album) + "," +
                    Helpers.EscapeCsvField(Track);
         }
 

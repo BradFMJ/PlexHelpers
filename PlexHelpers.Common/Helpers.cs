@@ -174,7 +174,9 @@ namespace PlexHelpers.Common
                         //    }
                         //}
 
+
                         if(!string.IsNullOrWhiteSpace(plexMovie.IMDB))
+
                         {
                             plexMovie.MovieFolderName += " {" + plexMovie.IMDB + "}";
                         }
@@ -359,6 +361,7 @@ namespace PlexHelpers.Common
             return newTVShows;
         }
 
+
         public static List<PlexCollectionTVShow> ReadTVShowBackupCollectionCSV(string filePath)
         {
             var newTVShows = new List<PlexCollectionTVShow>();
@@ -392,6 +395,7 @@ namespace PlexHelpers.Common
 
             return newTVShows;
         }
+
 
         public static List<PlexCollectionTrack> ReadMusicCollectionCSV(string filePath)
         {

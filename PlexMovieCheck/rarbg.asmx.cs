@@ -51,7 +51,7 @@ namespace PlexHelpers.Web
                 }
             }
 
-            var yearRegex = new Regex("\\.(19[123456789]\\d{1}|20[012]\\d{1})\\.");
+            var yearRegex = new Regex(@"[\.\(\s]{1}(19[123456789]\d{1}|20[012]\d{1})[\.\)\s]{1}");
 
             var match = yearRegex.Match(title);
 

@@ -30,8 +30,8 @@ namespace PlexHelpers.TVSeriesMover
             });
             _client.BaseAddress = new Uri("http://localhost:8081/home/");
 
-            _tvShows = Helpers.ReadMedusaTVShowCSV("C:\\imdb\\medusa_tvshows.csv");
-            _episodes = Helpers.ReadMedusaEpisodeCSV("C:\\imdb\\medusa_episodes.csv");
+            _tvShows = Helpers.ReadMedusaTVShowCSV("C:\\Share\\H\\medusa_tvshows.csv");
+            _episodes = Helpers.ReadMedusaEpisodeCSV("C:\\Share\\H\\medusa_episodes.csv");
 
             _episodes = _episodes.Where(p => p.season != 0).ToList();
 
@@ -41,7 +41,8 @@ namespace PlexHelpers.TVSeriesMover
             {
                 tvShow.Episodes = _episodes.Where(p => p.showid == tvShow.indexer_id && p.indexer == tvShow.indexer).ToList();
             }
-            _tvShows = _tvShows.Where(p => p.HasAllEpisodes).OrderBy(p => p.SeriesSizeMB).ToList();
+            _tvShows = _tvShows.OrderBy(p => p.SeriesSizeMB).ToList();
+            //_tvShows = _tvShows.Where(p => p.HasAllEpisodes).OrderBy(p => p.SeriesSizeMB).ToList();
 
             // _tvShows = _tvShows.Where(p => p.HasAllSubtitles || p.AllSubtitlesRecentlySearched).OrderBy(p => p.SeriesSizeMB).ToList();
 
@@ -52,8 +53,12 @@ namespace PlexHelpers.TVSeriesMover
             {
                 //if (tvShow.HasAllEpisodes && (tvShow.HasAllSubtitles || tvShow.AllSubtitlesRecentlySearched))
 
-                    if (tvShow.HasAllEpisodes)
-                    {
+                if (tvShow.HasAllEpisodes || 1 == 1)
+                //if (tvShow.location.StartsWith("C:\\Share\\PlexNewTV3"))
+                {
+
+
+
 
                     count++;
 
@@ -124,7 +129,9 @@ namespace PlexHelpers.TVSeriesMover
                             try
                             {
                                 Directory.Move(tvshowLocation.FullName, targetDirectory);
-                                Directory.Delete(tvshowLocation.FullName, true);
+
+                                //Directory.Delete(tvshowLocation.FullName, true);
+
 
                             }
                             catch (Exception ex)

@@ -82,10 +82,10 @@ namespace PlexHelpers.PlexIMDBScraper
                             };
                             if (Uri.TryCreate(plexIMDBMap.PlexGuid, UriKind.Absolute, out parseUri))
                             {
-                                plexIMDBMap.Plex = parseUri.PathAndQuery.Replace(@"/","");
+                                plexIMDBMap.Plex = parseUri.PathAndQuery.Replace(@"/", "");
                                 movie.Plex = plexIMDBMap.Plex;
                             }
-                            if(metadata.Guid == null)
+                            if (metadata.Guid == null)
                             {
                                 continue;
                             }
@@ -130,7 +130,7 @@ namespace PlexHelpers.PlexIMDBScraper
             }
             Helpers.WritePlexMapCSV("C:\\Share\\H\\plex-map.csv", _plexMaps);
 
-            foreach(var plexMovie in _plexMovies)
+            foreach (var plexMovie in _plexMovies)
             {
                 var map = _plexMaps.FirstOrDefault(p => p.PlexGuid == plexMovie.Guid);
                 if (map != null)

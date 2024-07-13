@@ -47,6 +47,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexHelpers.TVSeriesCollect
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexHelpers.MovieCollectionRestore", "PlexHelpers.MovieCollectionRestore\PlexHelpers.MovieCollectionRestore.csproj", "{DFE00E6C-CE2C-4798-B7BF-259FBA3E5B71}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexHelpers.DumbMover", "PlexHelpers.DumbMover\PlexHelpers.DumbMover.csproj", "{8C70FD79-A385-4D64-9185-954AAD229EEE}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexHelpers.MusicImporter", "PlexHelpers.MusicImporter\PlexHelpers.MusicImporter.csproj", "{58948A4A-6D19-4961-ACBB-1E9ED676F738}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexHelpers.TraktSync", "PlexHelpers.TraktSync\PlexHelpers.TraktSync.csproj", "{FD4E63C9-422C-44DD-BC9A-D4EF2CFE72E8}"
@@ -327,6 +329,18 @@ Global
 		{DFE00E6C-CE2C-4798-B7BF-259FBA3E5B71}.Release|x64.Build.0 = Release|Any CPU
 		{DFE00E6C-CE2C-4798-B7BF-259FBA3E5B71}.Release|x86.ActiveCfg = Release|Any CPU
 		{DFE00E6C-CE2C-4798-B7BF-259FBA3E5B71}.Release|x86.Build.0 = Release|Any CPU
+		{8C70FD79-A385-4D64-9185-954AAD229EEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C70FD79-A385-4D64-9185-954AAD229EEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C70FD79-A385-4D64-9185-954AAD229EEE}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8C70FD79-A385-4D64-9185-954AAD229EEE}.Debug|x64.Build.0 = Debug|Any CPU
+		{8C70FD79-A385-4D64-9185-954AAD229EEE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8C70FD79-A385-4D64-9185-954AAD229EEE}.Debug|x86.Build.0 = Debug|Any CPU
+		{8C70FD79-A385-4D64-9185-954AAD229EEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C70FD79-A385-4D64-9185-954AAD229EEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C70FD79-A385-4D64-9185-954AAD229EEE}.Release|x64.ActiveCfg = Release|Any CPU
+		{8C70FD79-A385-4D64-9185-954AAD229EEE}.Release|x64.Build.0 = Release|Any CPU
+		{8C70FD79-A385-4D64-9185-954AAD229EEE}.Release|x86.ActiveCfg = Release|Any CPU
+		{8C70FD79-A385-4D64-9185-954AAD229EEE}.Release|x86.Build.0 = Release|Any CPU
 		{58948A4A-6D19-4961-ACBB-1E9ED676F738}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{58948A4A-6D19-4961-ACBB-1E9ED676F738}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58948A4A-6D19-4961-ACBB-1E9ED676F738}.Debug|x64.ActiveCfg = Debug|Any CPU
