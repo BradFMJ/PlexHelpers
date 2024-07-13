@@ -459,16 +459,16 @@ namespace PlexSubFix
             //FixTvShowNames(@"C:\Share\PlexNewTV2\TV Shows\Mayday (2003)");
             //CleanCompletedFolder(@"C:\Users\Brad\Downloads\Newshosting");
 
-            CleanCompletedFolder(@"H:\Media\Completed");
+            //CleanCompletedFolder(@"H:\Media\Completed");
             //CleanCompletedFolder(@"H:\Media\Music");
             //CleanCompletedFolder(@"H:\Media\Movies");
             //CleanCompletedFolder(@"H:\Media\Backlog");
 
             //FixMovieSubTitles(@"U:\Media\Movies");
             //FixMovieSubTitles(@"J:\Media\Movies");
-            FixMovieSubTitles(@"H:\Media\Movies");
-            FixMovieSubTitles(@"H:\Media\Completed");
-            FixTvShowSubTitles(@"H:\Media\Completed");
+            //FixMovieSubTitles(@"H:\Media\Movies");
+            //FixMovieSubTitles(@"H:\Media\Completed");
+            //FixTvShowSubTitles(@"H:\Media\Completed");
 
             // FixTvShowNamesOneOff(new DirectoryInfo(@"C:\Share\Downloads\Completed\Liberty's Kids (2002)\Season 01"));
             CleanCompletedFolder(@"C:\Share\Downloads\Completed");
@@ -478,7 +478,7 @@ namespace PlexSubFix
 
             //CleanCompletedFolder(@"C:\Users\bradf\Downloads\Newshosting");
             //FixTvShowNamesOneOff(new DirectoryInfo(@"C:\Share\Downloads\Completed\Liberty's Kids (2002)\Season 01"));
-            FixTvROMNamesOneOff(new DirectoryInfo(@"C:\Users\bradf\Downloads\Newshosting\Nintendo DS Complete Romset"));
+            //FixTvROMNamesOneOff(new DirectoryInfo(@"C:\Users\bradf\Downloads\Newshosting\Nintendo DS Complete Romset"));
             //CleanCompletedFolder(@"C:\Share\Downloads\Completed");
             //CleanCompletedFolder(@"C:\Share\Downloads\Upload");
             //CleanCompletedFolder(@"C:\Share\Downloads\Movies");
@@ -489,9 +489,9 @@ namespace PlexSubFix
             //CleanCompletedFolder(@"H:\Media\Movies");
 
 
-            //FixMovieSubTitles(@"C:\Share\Downloads\Movies");
-            //FixMovieSubTitles(@"C:\Share\Downloads\Completed");
-            //FixTvShowSubTitles(@"C:\Share\Downloads\Completed");
+            FixMovieSubTitles(@"C:\Share\Downloads\Movies");
+            FixMovieSubTitles(@"C:\Share\Downloads\Completed");
+            FixTvShowSubTitles(@"C:\Share\Downloads\Completed");
 
 
 

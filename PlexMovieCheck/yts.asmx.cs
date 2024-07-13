@@ -104,9 +104,10 @@ namespace PlexHelpers.Web
                 {
                     returnCss = "background-color:#ffff66";//Yellow
                 }
-                else
+
+                if (Settings.ReleaseGroups.Any(p => plexMovie.FullFileName.ToLowerInvariant().Contains(p)) && (year == DateTime.Now.Year || year == (DateTime.Now.Year - 1)) && !plexMovie.FullFileName.ToLowerInvariant().Contains("bluray"))
                 {
-                    returnCss = "background-color:#66ff66";//Green
+                    returnCss = "background-color:#FFAC1C";//orange
                 }
             }
 
