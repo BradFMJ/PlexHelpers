@@ -88,9 +88,10 @@ namespace PlexHelpers.Common
                     {
                         plexMovie.Year = parseInt;
                     }
-                    if (int.TryParse(parts[2], out parseInt))
+                    long parseLong;
+                    if (long.TryParse(parts[2], out parseLong))
                     {
-                        plexMovie.Size = parseInt;
+                        plexMovie.Size = parseLong;
                     }
                     if (int.TryParse(parts[3], out parseInt))
                     {
