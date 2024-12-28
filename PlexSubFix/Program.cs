@@ -289,7 +289,7 @@ namespace PlexSubFix
             };
             LanguageCodesNew["kn"] = new List<Regex> {
                 new Regex(".*_kan,.*\\.srt$", RegexOptions.Compiled),
-                new Regex(".*_kan\\.srt$", RegexOptions.Compiled) 
+                new Regex(".*_kan\\.srt$", RegexOptions.Compiled)
             };
             LanguageCodesNew["ko"] = new List<Regex> {
                     new Regex("^korean\\.srt$", RegexOptions.Compiled),
@@ -446,7 +446,7 @@ namespace PlexSubFix
             //CheckTVFolder(@"L:\Media\TV Shows");
             //CheckTVFolder(@"O:\Media\TV Shows");
 
-            //FixTvShowNames(@"C:\Share\Downloads\Completed\Ice (2016)");
+            //FixTvShowNames(@"C:\Share\Downloads\Completed\The Owl Service (1969)");
             //FixTvShowSubTitles(@"C:\Share\Downloads\Completed\The Brady Kids (1972)");
 
             //CleanCompletedFolder(@"J:\Media\Movies");
@@ -456,21 +456,21 @@ namespace PlexSubFix
             //CheckFolder(@"T:\Media\Movies");
 
 
-             FixTvShowNames(@"C:\Users\bradf\Downloads\Newshosting\The Millionaire Matchmaker (2008)");
+            //FixTvShowNames(@"C:\Share\Downloads\Completed\foo");
             //CleanCompletedFolder(@"C:\Users\Brad\Downloads\Newshosting");
 
-            CleanCompletedFolder(@"H:\Media\Completed");
+            //CleanCompletedFolder(@"H:\Media\Completed");
             //CleanCompletedFolder(@"H:\Media\Music");
             //CleanCompletedFolder(@"H:\Media\Movies");
             //CleanCompletedFolder(@"H:\Media\Backlog");
 
             //FixMovieSubTitles(@"U:\Media\Movies");
             //FixMovieSubTitles(@"J:\Media\Movies");
-            FixMovieSubTitles(@"H:\Media\Movies");
-            FixMovieSubTitles(@"H:\Media\Completed");
-            FixTvShowSubTitles(@"H:\Media\Completed");
+            //FixMovieSubTitles(@"H:\Media\Movies");
+            //FixMovieSubTitles(@"H:\Media\Completed");
+            //FixTvShowSubTitles(@"H:\Media\Completed");
 
-            // FixTvShowNamesOneOff(new DirectoryInfo(@"C:\Share\Downloads\Completed\Liberty's Kids (2002)\Season 01"));
+            //FixTvShowNamesOneOff(new DirectoryInfo(@"C:\Share\Downloads\Completed\Soap (1977)"));
             CleanCompletedFolder(@"C:\Share\Downloads\Completed");
             CleanCompletedFolder(@"C:\Share\Downloads\Upload");
             CleanCompletedFolder(@"C:\Share\Downloads\Movies");
@@ -478,7 +478,7 @@ namespace PlexSubFix
 
             //CleanCompletedFolder(@"C:\Users\bradf\Downloads\Newshosting");
             //FixTvShowNamesOneOff(new DirectoryInfo(@"C:\Share\Downloads\Completed\Liberty's Kids (2002)\Season 01"));
-            FixTvROMNamesOneOff(new DirectoryInfo(@"C:\Users\bradf\Downloads\Newshosting\Nintendo DS Complete Romset"));
+            //FixTvROMNamesOneOff(new DirectoryInfo(@"C:\Users\bradf\Downloads\Newshosting\Nintendo DS Complete Romset"));
             //CleanCompletedFolder(@"C:\Share\Downloads\Completed");
             //CleanCompletedFolder(@"C:\Share\Downloads\Upload");
             //CleanCompletedFolder(@"C:\Share\Downloads\Movies");
@@ -489,9 +489,9 @@ namespace PlexSubFix
             //CleanCompletedFolder(@"H:\Media\Movies");
 
 
-            //FixMovieSubTitles(@"C:\Share\Downloads\Movies");
-            //FixMovieSubTitles(@"C:\Share\Downloads\Completed");
-            //FixTvShowSubTitles(@"C:\Share\Downloads\Completed");
+            FixMovieSubTitles(@"C:\Share\Downloads\Movies");
+            FixMovieSubTitles(@"C:\Share\Downloads\Completed");
+            FixTvShowSubTitles(@"C:\Share\Downloads\Completed");
 
 
 
@@ -608,13 +608,13 @@ namespace PlexSubFix
                 _FixTvShowNames(subDir);
             }
 
-            var tvShows = directoryInfo.GetFilesByExtensions(Settings.VideoFileExtensions.ToArray()).ToList().OrderByDescending(p=>p.Name).ToList();
+            var tvShows = directoryInfo.GetFilesByExtensions(Settings.VideoFileExtensions.ToArray());
 
             Match match;
 
             foreach (var tvShow in tvShows)
             {
-                match = Regex.Match(tvShow.Name, @"[Ss](\d+)[Ee](\d+)");
+                match = Regex.Match(tvShow.Name, @"[Ss](\d{2,})[Ee](\d{2,})");
                 if (match.Success)
                 {
                     continue;
@@ -631,54 +631,31 @@ namespace PlexSubFix
                 //match = Regex.Match(tvShow.Name, @"Season (\d+) Episode (\d+)");
                 //match = Regex.Match(tvShow.Name, @"\.(\d{2})\.(\d{2})\.");
                 //match = Regex.Match(tvShow.Name, @"EP-(\d+)");
-                //match = Regex.Match(tvShow.Name, @"e(\d{2})");
-                match = Regex.Match(tvShow.Name, @"(\d{3,4})");
-                //match = Regex.Match(tvShow.Name, @"(\d{1,2})x(\d{2})");
+                //match = Regex.Match(tvShow.Name, @"(\d{4} - )");
+                //match = Regex.Match(tvShow.Name, @"(\d{1})x(\d{2})");
+                match = Regex.Match(tvShow.Name, @" (\d{2}) ");
                 //match = Regex.Match(tvShow.Name, @"S(\d{2}) E(\d{2})");
+                //match = Regex.Match(tvShow.Name, @"(\d{3}) - ");
+                //match = Regex.Match(tvShow.Name, @"S(\d{2})\SE(\d{2})");
+                //match = Regex.Match(tvShow.Name, @"S(\d{1,})E(\d{1,})");
+                //match = Regex.Match(tvShow.Name, @"S(\d{1,})E(\d{2})");
                 if (match.Success)
                 {
-                    string seasonAndEpisode = match.Groups[1].Value.PadLeft(4, '0');
-                    string episode = seasonAndEpisode.Substring(2, 2);
+                    //string seasonAndEpisode = match.Groups[1].Value.PadLeft(3, '0');
+                    //string season = seasonAndEpisode.Substring(0, 1).PadLeft(2, '0');
+                    //string episode = seasonAndEpisode.Substring(1, 2);
 
-                    //string episode = match.Groups[1].Value.PadLeft(2, '0');
+                    string episode = match.Groups[1].Value.PadLeft(2, '0');
 
                     var intEpisode = int.Parse(episode);
-                    //if (folderSeason != "20")
-                    //{
-                    //    continue;
-                    //}
 
                     //if (folderSeason == "02")
                     //{
-                    //    intEpisode -= 22;
-                    //    episode = intEpisode.ToString();
+                    //    intEpisode -= 36;
                     //}
-                    //else if (folderSeason == "03")
+                    //if (folderSeason == "03")
                     //{
-                    //    intEpisode -= 44;
-                    //    episode = intEpisode.ToString();
-                    //}
-                    //else if (folderSeason == "04")
-                    //{
-                    //    intEpisode -= 66;
-                    //    episode = intEpisode.ToString();
-                    //}
-                    //if(folderSeason == "01" && intEpisode == 1)
-                    //{
-                    //    episode = "01E02";
-                    //}
-                    //else if (folderSeason == "01" && intEpisode >=2)
-                    //{
-                    //    intEpisode ++;
-                    //    episode = intEpisode.ToString();
-                    //}
-                    //else if(folderSeason == "04" && intEpisode == 1)
-                    //{
-                    //    episode = "01E02";
-                    //}
-                    //else
-                    //{
-                    //    continue;
+                    //    intEpisode -= 60;
                     //}
                     //if (folderSeason == "04")
                     //{
@@ -693,7 +670,7 @@ namespace PlexSubFix
                     //    intEpisode -= 132;5
                     //}
 
-                    string destination = string.Format("S{0}E{1}", folderSeason, episode.PadLeft(2, '0'));
+                    string destination = string.Format("S{0}E{1}", folderSeason, intEpisode.ToString().PadLeft(2, '0'));
                     string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
 
                     //newFileName = newFileName.Replace("三体-","");
@@ -1287,7 +1264,7 @@ namespace PlexSubFix
             foreach (var tvShow in tvShows)
             {
 
-                match = Regex.Match(tvShow.Name, @"S01S01[Ee](\d+)");
+                match = Regex.Match(tvShow.Name, @"[Ee](\d+)");
                 if (match.Success)
                 {
                     var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");

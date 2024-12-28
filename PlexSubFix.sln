@@ -51,9 +51,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexHelpers.DumbMover", "Pl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexHelpers.MusicImporter", "PlexHelpers.MusicImporter\PlexHelpers.MusicImporter.csproj", "{58948A4A-6D19-4961-ACBB-1E9ED676F738}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexHelpers.TraktSync", "PlexHelpers.TraktSync\PlexHelpers.TraktSync.csproj", "{FD4E63C9-422C-44DD-BC9A-D4EF2CFE72E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlexHelpers.TraktSync", "PlexHelpers.TraktSync\PlexHelpers.TraktSync.csproj", "{FD4E63C9-422C-44DD-BC9A-D4EF2CFE72E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexHelpers.TTGrabber", "PlexHelpers.TTGrabber\PlexHelpers.TTGrabber.csproj", "{D130B504-448B-4413-A3DF-3CA588739A82}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexHelpers.NewshostingMover", "PlexHelpers.NewshostingMover\PlexHelpers.NewshostingMover.csproj", "{4E1401D1-003D-4815-8F91-B70E3062D4D0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -377,6 +379,18 @@ Global
 		{D130B504-448B-4413-A3DF-3CA588739A82}.Release|x64.Build.0 = Release|Any CPU
 		{D130B504-448B-4413-A3DF-3CA588739A82}.Release|x86.ActiveCfg = Release|Any CPU
 		{D130B504-448B-4413-A3DF-3CA588739A82}.Release|x86.Build.0 = Release|Any CPU
+		{4E1401D1-003D-4815-8F91-B70E3062D4D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E1401D1-003D-4815-8F91-B70E3062D4D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E1401D1-003D-4815-8F91-B70E3062D4D0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4E1401D1-003D-4815-8F91-B70E3062D4D0}.Debug|x64.Build.0 = Debug|Any CPU
+		{4E1401D1-003D-4815-8F91-B70E3062D4D0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4E1401D1-003D-4815-8F91-B70E3062D4D0}.Debug|x86.Build.0 = Debug|Any CPU
+		{4E1401D1-003D-4815-8F91-B70E3062D4D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E1401D1-003D-4815-8F91-B70E3062D4D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E1401D1-003D-4815-8F91-B70E3062D4D0}.Release|x64.ActiveCfg = Release|Any CPU
+		{4E1401D1-003D-4815-8F91-B70E3062D4D0}.Release|x64.Build.0 = Release|Any CPU
+		{4E1401D1-003D-4815-8F91-B70E3062D4D0}.Release|x86.ActiveCfg = Release|Any CPU
+		{4E1401D1-003D-4815-8F91-B70E3062D4D0}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
