@@ -24,7 +24,7 @@ namespace PlexHelpers.Common.Models
         public string Hash { get; set; }
         public string MovieFolderName { get; set; }
         public int MetadataId { get; set; }
-        public int Duration { get; set; }
+        public long Duration { get; set; }
         public string IMDB { get; set; }
         public string TMDB { get; set; }
         public string TVDB { get; set; }

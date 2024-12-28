@@ -456,7 +456,7 @@ namespace PlexSubFix
             //CheckFolder(@"T:\Media\Movies");
 
 
-            //FixTvShowNames(@"C:\Share\PlexNewTV2\TV Shows\Mayday (2003)");
+             FixTvShowNames(@"C:\Users\bradf\Downloads\Newshosting\The Millionaire Matchmaker (2008)");
             //CleanCompletedFolder(@"C:\Users\Brad\Downloads\Newshosting");
 
             CleanCompletedFolder(@"H:\Media\Completed");
@@ -608,7 +608,7 @@ namespace PlexSubFix
                 _FixTvShowNames(subDir);
             }
 
-            var tvShows = directoryInfo.GetFilesByExtensions(Settings.VideoFileExtensions.ToArray());
+            var tvShows = directoryInfo.GetFilesByExtensions(Settings.VideoFileExtensions.ToArray()).ToList().OrderByDescending(p=>p.Name).ToList();
 
             Match match;
 
@@ -631,26 +631,54 @@ namespace PlexSubFix
                 //match = Regex.Match(tvShow.Name, @"Season (\d+) Episode (\d+)");
                 //match = Regex.Match(tvShow.Name, @"\.(\d{2})\.(\d{2})\.");
                 //match = Regex.Match(tvShow.Name, @"EP-(\d+)");
-                //match = Regex.Match(tvShow.Name, @"(\d{3})");
-                //match = Regex.Match(tvShow.Name, @"(\d{2})x(\d{2})");
-                match = Regex.Match(tvShow.Name, @"S(\d{2}) E(\d{2})");
+                //match = Regex.Match(tvShow.Name, @"e(\d{2})");
+                match = Regex.Match(tvShow.Name, @"(\d{3,4})");
+                //match = Regex.Match(tvShow.Name, @"(\d{1,2})x(\d{2})");
+                //match = Regex.Match(tvShow.Name, @"S(\d{2}) E(\d{2})");
                 if (match.Success)
                 {
-                    //string seasonAndEpisode = match.Groups[1].Value.PadLeft(3, '0');
-                    //string season = seasonAndEpisode.Substring(0, 1).PadLeft(2, '0');
-                    //string episode = seasonAndEpisode.Substring(1, 2);
+                    string seasonAndEpisode = match.Groups[1].Value.PadLeft(4, '0');
+                    string episode = seasonAndEpisode.Substring(2, 2);
 
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
+                    //string episode = match.Groups[1].Value.PadLeft(2, '0');
 
                     var intEpisode = int.Parse(episode);
+                    //if (folderSeason != "20")
+                    //{
+                    //    continue;
+                    //}
 
                     //if (folderSeason == "02")
                     //{
-                    //    intEpisode -= 13;
+                    //    intEpisode -= 22;
+                    //    episode = intEpisode.ToString();
                     //}
-                    //if (folderSeason == "03")
+                    //else if (folderSeason == "03")
                     //{
-                    //    intEpisode -= 28;
+                    //    intEpisode -= 44;
+                    //    episode = intEpisode.ToString();
+                    //}
+                    //else if (folderSeason == "04")
+                    //{
+                    //    intEpisode -= 66;
+                    //    episode = intEpisode.ToString();
+                    //}
+                    //if(folderSeason == "01" && intEpisode == 1)
+                    //{
+                    //    episode = "01E02";
+                    //}
+                    //else if (folderSeason == "01" && intEpisode >=2)
+                    //{
+                    //    intEpisode ++;
+                    //    episode = intEpisode.ToString();
+                    //}
+                    //else if(folderSeason == "04" && intEpisode == 1)
+                    //{
+                    //    episode = "01E02";
+                    //}
+                    //else
+                    //{
+                    //    continue;
                     //}
                     //if (folderSeason == "04")
                     //{
@@ -664,8 +692,8 @@ namespace PlexSubFix
                     //{
                     //    intEpisode -= 132;5
                     //}
-                    
-                    string destination = string.Format("S{0}E{1}", folderSeason, intEpisode.ToString().PadLeft(2, '0'));
+
+                    string destination = string.Format("S{0}E{1}", folderSeason, episode.PadLeft(2, '0'));
                     string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
 
                     //newFileName = newFileName.Replace("三体-","");

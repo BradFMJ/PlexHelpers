@@ -113,9 +113,9 @@ namespace PlexHelpers.Common
                     {
                         plexMovie.MetadataId = parseInt;
                     }
-                    if (int.TryParse(parts[15], out parseInt))
+                    if (long.TryParse(parts[15], out parseLong))
                     {
-                        plexMovie.Duration = parseInt;
+                        plexMovie.Duration = parseLong;
                     }
 
                     plexMovie.MovieFolderName = ReplaceInvalidFilePathChars(plexMovie.Title);
