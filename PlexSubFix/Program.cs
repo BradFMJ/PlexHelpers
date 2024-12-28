@@ -446,7 +446,7 @@ namespace PlexSubFix
             //CheckTVFolder(@"L:\Media\TV Shows");
             //CheckTVFolder(@"O:\Media\TV Shows");
 
-            //FixTvShowNames(@"C:\Share\Downloads\Completed\Ice (2016)");
+            //FixTvShowNames(@"C:\Share\Downloads\Completed\The Owl Service (1969)");
             //FixTvShowSubTitles(@"C:\Share\Downloads\Completed\The Brady Kids (1972)");
 
             //CleanCompletedFolder(@"J:\Media\Movies");
@@ -456,7 +456,7 @@ namespace PlexSubFix
             //CheckFolder(@"T:\Media\Movies");
 
 
-            //FixTvShowNames(@"C:\Share\PlexNewTV2\TV Shows\Mayday (2003)");
+            //FixTvShowNames(@"C:\Share\Downloads\Completed\foo");
             //CleanCompletedFolder(@"C:\Users\Brad\Downloads\Newshosting");
 
             //CleanCompletedFolder(@"H:\Media\Completed");
@@ -470,7 +470,7 @@ namespace PlexSubFix
             //FixMovieSubTitles(@"H:\Media\Completed");
             //FixTvShowSubTitles(@"H:\Media\Completed");
 
-            // FixTvShowNamesOneOff(new DirectoryInfo(@"C:\Share\Downloads\Completed\Liberty's Kids (2002)\Season 01"));
+            //FixTvShowNamesOneOff(new DirectoryInfo(@"C:\Share\Downloads\Completed\Soap (1977)"));
             CleanCompletedFolder(@"C:\Share\Downloads\Completed");
             CleanCompletedFolder(@"C:\Share\Downloads\Upload");
             CleanCompletedFolder(@"C:\Share\Downloads\Movies");
@@ -614,7 +614,7 @@ namespace PlexSubFix
 
             foreach (var tvShow in tvShows)
             {
-                match = Regex.Match(tvShow.Name, @"[Ss](\d+)[Ee](\d+)");
+                match = Regex.Match(tvShow.Name, @"[Ss](\d{2,})[Ee](\d{2,})");
                 if (match.Success)
                 {
                     continue;
@@ -631,26 +631,31 @@ namespace PlexSubFix
                 //match = Regex.Match(tvShow.Name, @"Season (\d+) Episode (\d+)");
                 //match = Regex.Match(tvShow.Name, @"\.(\d{2})\.(\d{2})\.");
                 //match = Regex.Match(tvShow.Name, @"EP-(\d+)");
-                //match = Regex.Match(tvShow.Name, @"(\d{3})");
-                //match = Regex.Match(tvShow.Name, @"(\d{2})x(\d{2})");
-                match = Regex.Match(tvShow.Name, @"S(\d{2}) E(\d{2})");
+                //match = Regex.Match(tvShow.Name, @"(\d{4} - )");
+                //match = Regex.Match(tvShow.Name, @"(\d{1})x(\d{2})");
+                match = Regex.Match(tvShow.Name, @" (\d{2}) ");
+                //match = Regex.Match(tvShow.Name, @"S(\d{2}) E(\d{2})");
+                //match = Regex.Match(tvShow.Name, @"(\d{3}) - ");
+                //match = Regex.Match(tvShow.Name, @"S(\d{2})\SE(\d{2})");
+                //match = Regex.Match(tvShow.Name, @"S(\d{1,})E(\d{1,})");
+                //match = Regex.Match(tvShow.Name, @"S(\d{1,})E(\d{2})");
                 if (match.Success)
                 {
                     //string seasonAndEpisode = match.Groups[1].Value.PadLeft(3, '0');
                     //string season = seasonAndEpisode.Substring(0, 1).PadLeft(2, '0');
                     //string episode = seasonAndEpisode.Substring(1, 2);
 
-                    string episode = match.Groups[2].Value.PadLeft(2, '0');
+                    string episode = match.Groups[1].Value.PadLeft(2, '0');
 
                     var intEpisode = int.Parse(episode);
 
                     //if (folderSeason == "02")
                     //{
-                    //    intEpisode -= 13;
+                    //    intEpisode -= 36;
                     //}
                     //if (folderSeason == "03")
                     //{
-                    //    intEpisode -= 28;
+                    //    intEpisode -= 60;
                     //}
                     //if (folderSeason == "04")
                     //{
@@ -664,7 +669,7 @@ namespace PlexSubFix
                     //{
                     //    intEpisode -= 132;5
                     //}
-                    
+
                     string destination = string.Format("S{0}E{1}", folderSeason, intEpisode.ToString().PadLeft(2, '0'));
                     string newFileName = tvShow.Name.Replace(match.Groups[0].Value, destination);
 
@@ -1259,7 +1264,7 @@ namespace PlexSubFix
             foreach (var tvShow in tvShows)
             {
 
-                match = Regex.Match(tvShow.Name, @"S01S01[Ee](\d+)");
+                match = Regex.Match(tvShow.Name, @"[Ee](\d+)");
                 if (match.Success)
                 {
                     var folderMatch = Regex.Match(directoryInfo.Name, @"^Season (\d+)$");
