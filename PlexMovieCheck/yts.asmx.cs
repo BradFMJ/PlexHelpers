@@ -70,6 +70,12 @@ namespace PlexHelpers.Web
             {
                 returnCss = "background-color:#66ff66";//Green
 
+                if (Settings.ReleaseGroups.Any(p => plexMovie.FullFileName.ToLowerInvariant().Contains(p)) && !plexMovie.FullFileName.ToLowerInvariant().Contains("bluray"))
+                {
+                    returnCss = "background-color:#FFAC1C";//orange
+                    return returnCss;
+                }
+
                 if (plexMovie.Container != "mkv" && plexMovie.Container != "mp4")
                 {
                     returnCss = "background-color:#ffff66";//Yellow
@@ -85,7 +91,7 @@ namespace PlexHelpers.Web
                     returnCss = "background-color:#ffff66";//Yellow
                 }
 
-                if (year > 1980 && plexMovie.DisplayAspectRatio < (decimal)1.5)
+                if (year > 1998 && plexMovie.DisplayAspectRatio < (decimal)1.5)
                 {
                     returnCss = "background-color:#ffff66";//Yellow
                 }
@@ -103,10 +109,6 @@ namespace PlexHelpers.Web
                 if (Settings.ReleaseGroups.All(p => !plexMovie.FullFileName.ToLowerInvariant().Contains(p)))
                 {
                     returnCss = "background-color:#ffff66";//Yellow
-                }
-                else
-                {
-                    returnCss = "background-color:#66ff66";//Green
                 }
             }
 

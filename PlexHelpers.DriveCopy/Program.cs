@@ -80,7 +80,7 @@ namespace PlexHelpers.DriveCopy
                     {
                         if(CanMove)
                         {
-                            Helpers.DirectoryCopy(fileInfo.Directory.FullName, targetDirectory, true);
+                            Helpers.DirectoryCopy(fileInfo.Directory.FullName, targetDirectory, true, true);
 
                             File.AppendAllLines("C:\\imdb\\filecopylog.txt", new List<string> { movieFolderName });
                         }

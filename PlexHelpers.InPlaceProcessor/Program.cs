@@ -81,7 +81,7 @@ namespace PlexHelpers.InPlaceProcessor
                                             continue;
                                         }
 
-                                        Helpers.DirectoryCopy(plexMovie.FileInfo.DirectoryName, targetDirectory, true);
+                                        Helpers.DirectoryCopy(plexMovie.FileInfo.DirectoryName, targetDirectory, true, true);
                                         if (CanDelete)
                                         {
                                             Directory.Delete(plexMovie.FileInfo.DirectoryName, true);
@@ -129,7 +129,7 @@ namespace PlexHelpers.InPlaceProcessor
                                 }
                                 else
                                 {
-                                    Helpers.DirectoryCopy(plexMovie.FileInfo.DirectoryName, targetDirectory, true);
+                                    Helpers.DirectoryCopy(plexMovie.FileInfo.DirectoryName, targetDirectory, true, true);
                                     if (CanDelete)
                                     {
                                         Directory.Delete(plexMovie.FileInfo.DirectoryName, true);
@@ -172,7 +172,7 @@ namespace PlexHelpers.InPlaceProcessor
                                 }
                                 else
                                 {
-                                    Helpers.DirectoryCopy(plexMovie.FileInfo.DirectoryName, targetDirectory, true);
+                                    Helpers.DirectoryCopy(plexMovie.FileInfo.DirectoryName, targetDirectory, true, true);
                                     if (CanDelete)
                                     {
                                         Directory.Delete(plexMovie.FileInfo.DirectoryName, true);

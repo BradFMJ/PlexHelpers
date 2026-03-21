@@ -10,6 +10,7 @@ namespace PlexHelpers.Common.Models
         public string IMDB { get; set; }
         public string TMDB { get; set; }
         public string CollectionKey { get; set; }
+        public string Plex { get; set; }
 
         public override bool Equals(object obj)
         {
@@ -18,7 +19,7 @@ namespace PlexHelpers.Common.Models
 
         protected bool Equals(PlexCollectionMovie other)
         {
-            return string.Equals(CollectionName, other.CollectionName) && string.Equals(MovieTitle, other.MovieTitle) && MovieYear == other.MovieYear && string.Equals(IMDB, other.IMDB) && string.Equals(TMDB, other.TMDB) && string.Equals(CollectionKey, other.CollectionKey);
+            return string.Equals(CollectionName, other.CollectionName) && string.Equals(MovieTitle, other.MovieTitle) && MovieYear == other.MovieYear && string.Equals(IMDB, other.IMDB) && string.Equals(TMDB, other.TMDB) && string.Equals(CollectionKey, other.CollectionKey) && string.Equals(Plex, other.Plex);
         }
 
         public override int GetHashCode()
@@ -31,6 +32,7 @@ namespace PlexHelpers.Common.Models
                 hashCode = (hashCode * 397) ^ (IMDB != null ? IMDB.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (TMDB != null ? TMDB.GetHashCode() : 0);
                 hashCode = (hashCode * 397) ^ (CollectionKey != null ? CollectionKey.GetHashCode() : 0);
+                hashCode = (hashCode * 397) ^ (Plex != null ? Plex.GetHashCode() : 0);
                 return hashCode;
             }
         }
@@ -39,7 +41,8 @@ namespace PlexHelpers.Common.Models
         {
             return Helpers.EscapeCsvField(CollectionName) + "," +
                    Helpers.EscapeCsvField(MovieTitle) + "," + MovieYear + "," + IMDB + "," + TMDB + "," +
-                   CollectionKey;
+                   CollectionKey + "," +
+                   Plex;
         }
     }
 

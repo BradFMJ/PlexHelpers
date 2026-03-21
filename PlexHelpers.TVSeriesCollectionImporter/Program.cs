@@ -24,7 +24,7 @@ namespace PlexHelpers.TVSeriesCollectionImporter
         private static List<CollectionResponse> _plexCollections = new List<CollectionResponse>();
 
         //--List TV Shows for Import
-        //SELECT[tag],[title],[year]   FROM metadata_items
+        //SELECT[tag],[title],[year], '','','',metadata_items.guid,'',''   FROM metadata_items
         //left join taggings on taggings.metadata_item_id = metadata_items.id
         //left join tags on tags.id = taggings.tag_id
         //where metadata_items.metadata_type= 2 and tag_type = 319
@@ -45,24 +45,25 @@ namespace PlexHelpers.TVSeriesCollectionImporter
 
             _plexImportTVShows = Helpers.ReadTVShowCollectionCSV(_plexCollectionTVShowImportListPath);
 
-            _plexImportTVShows = new List<PlexCollectionTVShow>();
-            var wow = Helpers.ReadTVShowBackupCollectionCSV(@"C:\Share\H\import-tv-from-backup.csv");
-            foreach (var line in wow)
-            {
-                if (string.IsNullOrWhiteSpace(line.CollectionName))
-                {
-                    continue;
-                }
-                foreach (var entry in line.CollectionName.Split('|'))
-                {
-                    _plexImportTVShows.Add(new PlexCollectionTVShow
-                    {
-                        Year = line.Year,
-                        Title = line.Title,
-                        CollectionName = entry
-                    });
-                }
-            }
+            //_plexImportTVShows = new List<PlexCollectionTVShow>();
+            //var wow = Helpers.ReadTVShowBackupCollectionCSV(@"C:\Share\H\import-tv-from-backup.csv");
+            //foreach (var line in wow)
+            //{
+            //    if (string.IsNullOrWhiteSpace(line.CollectionName))
+            //    {
+            //        continue;
+            //    }
+            //    foreach (var entry in line.CollectionName.Split('|'))
+            //    {
+            //        _plexImportTVShows.Add(new PlexCollectionTVShow
+            //        {
+            //            Year = line.Year,
+            //            Title = line.Title,
+            //            CollectionName = entry,
+            //            Plex = line.Plex
+            //        });
+            //    }
+            //}
 
 
             var tvShowsNotFound = new List<PlexCollectionTVShow>();
@@ -102,9 +103,45 @@ namespace PlexHelpers.TVSeriesCollectionImporter
                 }
             }
 
+
+            foreach (var tvShowToImport in _plexImportTVShows)
+            {
+                if (tvShowToImport.Title == "Savage River")
+                {
+                    int i = 0;
+                }
+                string studioCollection;
+                if (studioMappings.TryGetValue(tvShowToImport.CollectionName, out studioCollection))
+                {
+                    if (string.IsNullOrWhiteSpace(studioCollection))
+                    {
+                        continue;
+                    }
+
+                    var collection = _plexCollections.FirstOrDefault(p => string.Equals(p.MediaContainer.Title2, studioCollection, StringComparison.InvariantCulture));
+
+                    if (collection == null)
+                    {
+                        Console.WriteLine("No Collection for Studio {0}", studioCollection);
+                        continue;
+                    }
+                    var plexCollectionTVShow = new PlexCollectionTVShow();
+                    plexCollectionTVShow.CollectionKey = collection.MediaContainer.Key;
+                    plexCollectionTVShow.Title = tvShowToImport.Title;
+                    plexCollectionTVShow.CollectionName = studioCollection;
+                    plexCollectionTVShow.Year = tvShowToImport.Year;
+                    plexCollectionTVShow.Plex = tvShowToImport.Plex;
+                }
+                else
+                {
+                    studioMappings.Add(tvShowToImport.CollectionName, "");
+                    Console.WriteLine("No Match for Studio {0}", tvShowToImport.CollectionName);
+                }
+            }
+
             foreach (var plexTVShow in _plexTVShows)
             {
-                if (plexTVShow.Title == "The Fairly OddParents")
+                if (plexTVShow.Title == "Savage River")
                 {
                     int i = 0;
                 }
@@ -128,6 +165,7 @@ namespace PlexHelpers.TVSeriesCollectionImporter
                     plexCollectionTVShow.Title = plexTVShow.Title;
                     plexCollectionTVShow.CollectionName = studioCollection;
                     plexCollectionTVShow.Year = plexTVShow.Year;
+                    plexCollectionTVShow.Plex = plexTVShow.Guid;
 
                     _plexImportTVShows.Add(plexCollectionTVShow);
                 }
@@ -146,7 +184,12 @@ namespace PlexHelpers.TVSeriesCollectionImporter
 
                     #region Match Collection Import TV Show to existing Plex TV Show
 
-                    var found = _plexTVShows.Where(p => p.Title == tvShowToImport.Title && p.Year == tvShowToImport.Year).ToList();
+                    var found = _plexTVShows.Where(p => p.Guid == tvShowToImport.Plex).ToList();
+                    if (found == null)
+                    {
+                        found = _plexTVShows.Where(p => p.Title == tvShowToImport.Title && p.Year == tvShowToImport.Year).ToList();
+                    }
+                    
                     if (found.Count == 1)
                     {
                         plexTVShow = found.First();

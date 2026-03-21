@@ -89,7 +89,7 @@ namespace PlexHelpers.MovieCollectionMerge
                                         continue;
                                     }
 
-                                    Helpers.DirectoryCopy(sourcePlexMovie.FileInfo.DirectoryName, targetDirectory, true);
+                                    Helpers.DirectoryCopy(sourcePlexMovie.FileInfo.DirectoryName, targetDirectory, true, true);
                                 }
                             }
                             else

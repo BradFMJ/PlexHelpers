@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using PlexHelpers.Common;
+using PlexHelpers.Common.Models;
 using PlexHelpers.Common.Plex;
 using System;
 using System.Collections.Generic;
@@ -106,23 +107,35 @@ namespace PlexHelpers.MovieCollectionExporter
                 {
                     try
                     {
+                        var plexCollectionMovie = new PlexCollectionMovie()
+                        {
+                            CollectionName = Helpers.EscapeCsvField(collection.MediaContainer.Title2),
+                            MovieTitle = Helpers.EscapeCsvField(movie.Title),
+                            MovieYear = movie.Year,
+                            CollectionKey = collection.MediaContainer.Key
+                        };
                         string imdb = string.Empty;
                         string tmdb = string.Empty;
-                        if(movie.Url.IsAbsoluteUri)
+                        string plex = string.Empty;
+                        if (movie.Url.IsAbsoluteUri)
                         {
                             if (movie.Url.Scheme == "com.plexapp.agents.imdb")
                             {
-                                imdb = movie.Url.Host;
+                                plexCollectionMovie.IMDB = movie.Url.Host;
                             }
                             if (movie.Url.Scheme == "com.plexapp.agents.themoviedb")
                             {
-                                tmdb = movie.Url.Host;
+                                plexCollectionMovie.TMDB = movie.Url.Host;
+                            }
+                            if (movie.Url.Scheme == "plex")
+                            {
+                                plexCollectionMovie.Plex = movie.Url.AbsoluteUri;
                             }
                         }
 
-                        lines.Add(Helpers.EscapeCsvField(collection.MediaContainer.Title2) + "," + Helpers.EscapeCsvField(movie.Title) + "," + movie.Year + "," + imdb + "," + tmdb + "," + collection.MediaContainer.Key);
+                        lines.Add(plexCollectionMovie.ToString());
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Console.WriteLine(ex);
                     }

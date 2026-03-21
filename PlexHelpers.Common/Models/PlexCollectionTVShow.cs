@@ -51,8 +51,10 @@ namespace PlexHelpers.Common.Models
         {
             var plexCollectionTVShow = new PlexCollectionTVShow
             {
-                CollectionName = parts[3],
-                Title = parts[1]
+                CollectionName = parts[0],
+                Title = parts[1],
+                Plex = parts[7],
+                CollectionKey = parts[3]
             };
 
             int parseInt;

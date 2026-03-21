@@ -84,6 +84,22 @@ namespace PlexHelpers.MovieCollectionImporter
                             Console.WriteLine("No Movie Matches Found In Lookup For {0}", movieToImport.MovieTitle);
                         }
                     }
+                    if (plexMovie == null && !string.IsNullOrWhiteSpace(movieToImport.Plex))
+                    {
+                        var found = _plexMovies.Where(p => p.Guid == movieToImport.Plex).ToList();
+                        if (found.Count == 1)
+                        {
+                            plexMovie = found.First();
+                        }
+                        else if (found.Count > 1)
+                        {
+                            Console.WriteLine("Multiple Movie Matches Found In Lookup For {0}", movieToImport.MovieTitle);
+                        }
+                        else
+                        {
+                            Console.WriteLine("No Movie Matches Found In Lookup For {0}", movieToImport.MovieTitle);
+                        }
+                    }
                     if (plexMovie == null)
                     {
                         var found = _plexMovies.Where(p => string.Equals(p.Title, movieToImport.MovieTitle.Replace(",", ""), StringComparison.InvariantCultureIgnoreCase)).ToList();
