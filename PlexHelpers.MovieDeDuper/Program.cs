@@ -16,7 +16,7 @@ namespace PlexHelpers.MovieDeDuper
         static void Main(string[] args)
         {
             //_plexMovies = Helpers.ReadPlexMovieCSV("C:\\Share\\H\\plex-movies.csv", Helpers.ReadPlexMapCSV("C:\\Share\\H\\plex-map.csv"));
-            _plexMovies = Helpers.ReadPlexMovieCSV("C:\\Share\\H\\plex-movies.csv");
+            _plexMovies = Helpers.ReadPlexMovieCSV(@"C:\Share\K\H\Media\plex-movies.csv");
 
 
             var sourceRootDir = "J" + @":\Media\Movies";
@@ -39,6 +39,10 @@ namespace PlexHelpers.MovieDeDuper
 
                     if (versions.Count != 2)
                     {
+                        //More than 5 minutes (credits/intro cut off maybe), manually check/watch movies to make sure they are the same movie
+                        Console.WriteLine("SKIPPING (VERSIONS) {0} of {1}: {2}", count, total, versions[0].MovieFolderName);
+                        Console.WriteLine("-------------------------------------------------");
+                        Console.WriteLine("-------------------------------------------------");
                         continue;
                     }
 
@@ -72,7 +76,7 @@ namespace PlexHelpers.MovieDeDuper
                         {
                             //both are 1080p with a preferred release group
                             var bluray = matches.Where(p => p.FullFileName.ToLowerInvariant().Contains("bluray")).ToList();
-                            if(bluray.Count == 1)
+                            if (bluray.Count == 1)
                             {
                                 toBeSaved = bluray.First();
                             }
@@ -94,67 +98,107 @@ namespace PlexHelpers.MovieDeDuper
 
                         //pick the the version that was not matched to be deleted
                         var toBeRemoved = versions.Single(p => p.FullFileName != toBeSaved.FullFileName);
+                        var toBeRemovedDirectoryName = toBeRemoved.FileInfo.DirectoryName.Replace("V:\\movies", "C:\\Share\\Movies");
+                        var toBeSavedDirectoryName = toBeSaved.FileInfo.DirectoryName.Replace("V:\\movies", "C:\\Share\\Movies");
+
                         //make sure we actually still have 2 copies on disk
-                        if (Directory.Exists(toBeRemoved.FileInfo.DirectoryName) && Directory.Exists(toBeSaved.FileInfo.DirectoryName))
+                        if (!Directory.Exists(toBeRemovedDirectoryName))
                         {
-                            var directoryInfo = new DirectoryInfo(toBeRemoved.FileInfo.DirectoryName);
-
-                            //Make sure there are no subfolders in the folder we are about to delete
-                            if (directoryInfo.GetDirectories().Length > 0)
-                            {
-                                Console.WriteLine("SKIPPING (FOLDER HAS SUBFOLDERS!!!) {0} of {1}: {2}", count, total, toBeRemoved.FileInfo.DirectoryName);
-                                Console.WriteLine("-------------------------------------------------");
-                                Console.WriteLine("-------------------------------------------------");
-
-                                continue;
-                            }
-
-                            //Make sure there is only 1 video file in the folder we are about to delete
-                            var allMovies = directoryInfo.GetFiles("*" + "." + "mkv", SearchOption.AllDirectories).ToList();
-                            allMovies.AddRange(directoryInfo.GetFiles("*" + "." + "mp4", SearchOption.AllDirectories).ToList());
-                            allMovies.AddRange(directoryInfo.GetFiles("*" + "." + "avi", SearchOption.AllDirectories).ToList());
-                            allMovies.AddRange(directoryInfo.GetFiles("*" + "." + "m4v", SearchOption.AllDirectories).ToList());
-                            allMovies.AddRange(directoryInfo.GetFiles("*" + "." + "mpeg", SearchOption.AllDirectories).ToList());
-                            allMovies.AddRange(directoryInfo.GetFiles("*" + "." + "mpg", System.IO.SearchOption.AllDirectories).ToList());
-                            allMovies.AddRange(directoryInfo.GetFiles("*" + "." + "wmv", SearchOption.AllDirectories).ToList());
-                            if (allMovies.Count > 1)
-                            {
-                                Console.WriteLine("SKIPPING (FOLDER HAS MULTIPLE VIDEO FILES!!!) {0} of {1}: {2}", count, total, toBeRemoved.FileInfo.DirectoryName);
-                                Console.WriteLine("-------------------------------------------------");
-                                Console.WriteLine("-------------------------------------------------");
-
-                                continue;
-                            }
-
-                            string input = string.Empty;
-                            if (IsInteractive)
-                            {
-                                Console.WriteLine("KEEP   {0}, {1}", TimeSpan.FromMilliseconds(toBeSaved.Duration).ToString(), toBeSaved.FileInfo.Name);
-                                Console.WriteLine("DELETE {0}, {1}", TimeSpan.FromMilliseconds(toBeRemoved.Duration).ToString(), toBeRemoved.FileInfo.Name);
-                                Console.WriteLine("ENTER 'Y' TO DELETE");
-                                input = Console.ReadLine().ToLowerInvariant();
-                            }
-
-                            if ((IsInteractive && input == "y") || !IsInteractive)
-                            {
-                                Console.WriteLine("DELETING {0} of {1}: {2}", count, total, toBeRemoved.FileInfo.DirectoryName);
-                                if (CanDelete)
-                                {
-                                    //https://www.c-sharpcorner.com/blogs/extension-methods-for-delete-files-and-folders-to-recycle-bin
-                                    Microsoft.VisualBasic.FileIO.FileSystem.DeleteDirectory(toBeRemoved.FileInfo.DirectoryName,
-                                        Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs,
-                                        Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
-                                }
-
-                                if (IsInteractive)
-                                {
-                                    Console.WriteLine("-------------------------------------------------");
-                                    Console.WriteLine("-------------------------------------------------");
-                                }
-                            }
+                            Console.WriteLine("SKIPPING (DIRECTORY NOT EXISTS!!!) {0} of {1}: {2}", count, total, toBeRemovedDirectoryName);
+                            Console.WriteLine("-------------------------------------------------");
+                            Console.WriteLine("-------------------------------------------------");
 
                             continue;
                         }
+                        if (!Directory.Exists(toBeRemovedDirectoryName))
+                        {
+                            Console.WriteLine("SKIPPING (DIRECTORY NOT EXISTS!!!) {0} of {1}: {2}", count, total, toBeSavedDirectoryName);
+                            Console.WriteLine("-------------------------------------------------");
+                            Console.WriteLine("-------------------------------------------------");
+
+                            continue;
+                        }
+                        
+                        var directoryInfo = new DirectoryInfo(toBeRemovedDirectoryName);
+
+                        //Make sure there are no subfolders in the folder we are about to delete
+                        if (directoryInfo.GetDirectories().Length > 0)
+                        {
+                            Console.WriteLine("SKIPPING (FOLDER HAS SUBFOLDERS!!!) {0} of {1}: {2}", count, total, toBeRemovedDirectoryName);
+                            Console.WriteLine("-------------------------------------------------");
+                            Console.WriteLine("-------------------------------------------------");
+
+                            continue;
+                        }
+
+                        //Make sure there is only 1 video file in the folder we are about to delete
+                        var allMovies = directoryInfo.GetFiles("*" + "." + "mkv", SearchOption.AllDirectories).ToList();
+                        allMovies.AddRange(directoryInfo.GetFiles("*" + "." + "mp4", SearchOption.AllDirectories).ToList());
+                        allMovies.AddRange(directoryInfo.GetFiles("*" + "." + "avi", SearchOption.AllDirectories).ToList());
+                        allMovies.AddRange(directoryInfo.GetFiles("*" + "." + "m4v", SearchOption.AllDirectories).ToList());
+                        allMovies.AddRange(directoryInfo.GetFiles("*" + "." + "mpeg", SearchOption.AllDirectories).ToList());
+                        allMovies.AddRange(directoryInfo.GetFiles("*" + "." + "mpg", System.IO.SearchOption.AllDirectories).ToList());
+                        allMovies.AddRange(directoryInfo.GetFiles("*" + "." + "wmv", SearchOption.AllDirectories).ToList());
+                        if (allMovies.Count > 1)
+                        {
+                            Console.WriteLine("SKIPPING (FOLDER HAS MULTIPLE VIDEO FILES!!!) {0} of {1}: {2}", count, total, toBeRemovedDirectoryName);
+                            Console.WriteLine("-------------------------------------------------");
+                            Console.WriteLine("-------------------------------------------------");
+
+                            continue;
+                        }
+
+                        string input = string.Empty;
+                        if (IsInteractive)
+                        {
+                            Console.WriteLine("KEEP   {0}, {1}", TimeSpan.FromMilliseconds(toBeSaved.Duration).ToString(), toBeSaved.FileInfo.FullName);
+                            Console.WriteLine("DELETE {0}, {1}", TimeSpan.FromMilliseconds(toBeRemoved.Duration).ToString(), toBeRemoved.FileInfo.FullName);
+                            Console.WriteLine("ENTER 'Y' TO DELETE");
+                            input = Console.ReadLine().ToLowerInvariant();
+                        }
+
+                        if ((input == "y"))
+                        {
+
+                            Console.WriteLine("DELETING {0} of {1}: {2}", count, total, toBeRemovedDirectoryName);
+                            if (CanDelete)
+                            {
+                                //https://www.c-sharpcorner.com/blogs/extension-methods-for-delete-files-and-folders-to-recycle-bin
+                                Microsoft.VisualBasic.FileIO.FileSystem.DeleteDirectory(toBeRemovedDirectoryName,
+                                    Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs,
+                                    Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
+                            }
+
+                            if (IsInteractive)
+                            {
+                                Console.WriteLine("-------------------------------------------------");
+                                Console.WriteLine("-------------------------------------------------");
+                            }
+                        }
+                        else if ((input == "2"))
+                        {
+
+                            Console.WriteLine("DELETING {0} of {1}: {2}", count, total, toBeSavedDirectoryName);
+                            if (CanDelete)
+                            {
+                                //https://www.c-sharpcorner.com/blogs/extension-methods-for-delete-files-and-folders-to-recycle-bin
+                                Microsoft.VisualBasic.FileIO.FileSystem.DeleteDirectory(toBeSavedDirectoryName,
+                                    Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs,
+                                    Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
+                            }
+
+                            if (IsInteractive)
+                            {
+                                Console.WriteLine("-------------------------------------------------");
+                                Console.WriteLine("-------------------------------------------------");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("SKIPPING (MATCHES) {0} of {1}: {2}", count, total, versions[0].MovieFolderName);
+                        Console.WriteLine("-------------------------------------------------");
+                        Console.WriteLine("-------------------------------------------------");
                     }
 
                 }

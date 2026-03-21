@@ -307,6 +307,7 @@ namespace PlexHelpers.Common
                         IMDB = parts.Length > 3 ? parts[3] : null,
                         TMDB = parts.Length > 4 ? parts[4] : null,
                         CollectionKey = parts.Length > 5 ? parts[5] : null,
+                        Plex = parts.Length > 6 ? parts[6] : null
                     };
 
                     int parseInt;
@@ -437,7 +438,7 @@ namespace PlexHelpers.Common
 
             foreach (var movie in movies)
             {
-                lines.Add(Helpers.EscapeCsvField(movie.CollectionName) + "," + Helpers.EscapeCsvField(movie.MovieTitle) + "," + (movie.MovieYear.HasValue ? movie.MovieYear.Value.ToString() : "") + "," + (!string.IsNullOrWhiteSpace(movie.IMDB) ? movie.IMDB : "") + "," + (!string.IsNullOrWhiteSpace(movie.TMDB) ? movie.TMDB : "") + "," + (!string.IsNullOrWhiteSpace(movie.CollectionKey) ? movie.CollectionKey : ""));
+                lines.Add(movie.ToString());
             }
 
             File.WriteAllLines(filePath, lines);

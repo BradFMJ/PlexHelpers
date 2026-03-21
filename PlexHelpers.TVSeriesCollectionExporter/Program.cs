@@ -136,7 +136,7 @@ namespace PlexHelpers.TVSeriesCollectionExporter
                             }
                             else if (tvShow.Url.Scheme == "plex")
                             {
-                                plexCollectionTvShow.Plex = tvShow.Url.PathAndQuery.Replace("/","");
+                                plexCollectionTvShow.Plex = tvShow.Url.AbsoluteUri;
                             }
                             else if (tvShow.Url.Scheme == "com.plexapp.agents.none")
                             {

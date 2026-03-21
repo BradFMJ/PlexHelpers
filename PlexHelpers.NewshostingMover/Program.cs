@@ -18,11 +18,25 @@ namespace PlexHelpers.NewshostingMover
             MoveFiles(new DirectoryInfo(@"C:\Users\bradf\Downloads\Newshosting\ToProcess"));
 
             CleanCompletedFolder(@"C:\Users\bradf\Downloads\Newshosting\ToProcess");
+
+            RenameFiles(new DirectoryInfo(@"C:\Users\bradf\Downloads\Newshosting"));
         }
 
         public static void MoveFiles(DirectoryInfo directoryInfo)
         {
-            var tvShows = directoryInfo.GetFilesByExtensions(Settings.VideoFileExtensions.ToArray());
+            int i = 0;
+            foreach (var directory in directoryInfo.GetDirectories())
+            {
+                if (!string.Equals(directory.FullName, @"C:\Users\bradf\Downloads\Newshosting\ToProcess\" + i)
+                    && !Directory.Exists(@"C:\Users\bradf\Downloads\Newshosting\ToProcess\" + i))
+                {
+                    Directory.Move(directory.FullName, @"C:\Users\bradf\Downloads\Newshosting\ToProcess\" + i);
+                }
+
+                i++;
+            }
+
+            var tvShows = directoryInfo.GetFilesByExtensionsRecursive(Settings.VideoFileExtensions.ToArray());
             foreach (var tvShow in tvShows)
             {
                 string destFile = Path.Combine(@"C:\Users\bradf\Downloads\Newshosting", tvShow.Name);
@@ -38,7 +52,14 @@ namespace PlexHelpers.NewshostingMover
 
             foreach (var subDir in subDirs)
             {
-                MoveFiles(subDir);
+                try
+                {
+
+                }
+                catch (Exception ex)
+                {
+                    MoveFiles(subDir);
+                }
             }
         }
 
@@ -59,7 +80,15 @@ namespace PlexHelpers.NewshostingMover
 
             if (CanMove)
             {
-                File.Move(sourceFileName, destFileName);
+                try
+                {
+                    File.Move(sourceFileName, destFileName);
+                }
+                catch (Exception ex)
+                {
+
+                }
+                
             }
 
             return true;
@@ -105,7 +134,15 @@ namespace PlexHelpers.NewshostingMover
             var subDirs = dInfo.GetDirectories();
             foreach (var subDir in subDirs)
             {
-                DeleteEmptyFolders(subDir);
+                try
+                {
+                    DeleteEmptyFolders(subDir);
+                }
+                catch(Exception ex)
+                {
+
+                }
+                
             }
         }
 
@@ -130,6 +167,22 @@ namespace PlexHelpers.NewshostingMover
             if (!dInfo.GetFiles().Any() && !dInfo.GetDirectories().Any())
             {
                 dInfo.Delete();
+            }
+        }
+
+        private static void RenameFiles(DirectoryInfo directoryInfo)
+        {
+            var tvShows = directoryInfo.GetFilesByExtensions(Settings.VideoFileExtensions.ToArray());
+            foreach (var tvShow in tvShows)
+            {
+                string destFile = Path.Combine(@"C:\Users\bradf\Downloads\Newshosting", tvShow.Name.Replace("_","."));
+
+                if (File.Exists(destFile))
+                {
+                    Console.WriteLine("Cannot move file" + destFile);
+                    continue;
+                }
+                Move(tvShow.FullName, destFile);
             }
         }
     }
