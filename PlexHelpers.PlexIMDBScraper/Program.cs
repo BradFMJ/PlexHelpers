@@ -24,9 +24,9 @@ namespace PlexHelpers.PlexIMDBScraper
         {
             HttpClient httClient = new HttpClient();
 
-            _plexMaps = Helpers.ReadPlexMapCSV("C:\\Share\\H\\plex-map.csv");
+            _plexMaps = Helpers.ReadPlexMapCSV(@"K:\Media\H\Media\plex-map.csv");
             //_plexMovies = Helpers.ReadPlexMovieCSV("C:\\Share\\H\\plex-movies.csv", _plexMaps);
-            _plexMovies = Helpers.ReadPlexMovieCSV("C:\\Share\\H\\plex-movies.csv");
+            _plexMovies = Helpers.ReadPlexMovieCSV(@"K:\Media\H\Media\plex-movies.csv");
 
             var plexKey = File.ReadAllText("plex-key.txt");
             host = plexKey.Split(':')[0];
@@ -114,8 +114,8 @@ namespace PlexHelpers.PlexIMDBScraper
                             }
 
                             _plexMaps.Add(plexIMDBMap);
-                            File.AppendAllLines("C:\\Share\\H\\plex-map.csv", new List<string> { Helpers.EscapeCsvField(plexIMDBMap.PlexGuid) + "," + Helpers.EscapeCsvField(plexIMDBMap.Plex) + "," + Helpers.EscapeCsvField(plexIMDBMap.IMDB) + "," + Helpers.EscapeCsvField(plexIMDBMap.TMDB) + "," + Helpers.EscapeCsvField(plexIMDBMap.TVDB) });
-                            Helpers.WritePlexMapCSV("C:\\imdb\\plex-map.csv", _plexMaps);
+                            File.AppendAllLines(@"K:\Media\H\Media\plex-map.csv", new List<string> { Helpers.EscapeCsvField(plexIMDBMap.PlexGuid) + "," + Helpers.EscapeCsvField(plexIMDBMap.Plex) + "," + Helpers.EscapeCsvField(plexIMDBMap.IMDB) + "," + Helpers.EscapeCsvField(plexIMDBMap.TMDB) + "," + Helpers.EscapeCsvField(plexIMDBMap.TVDB) });
+                            //Helpers.WritePlexMapCSV("C:\\imdb\\plex-map.csv", _plexMaps);
                         }
                     }
                 }
@@ -128,7 +128,7 @@ namespace PlexHelpers.PlexIMDBScraper
                     count++;
                 }
             }
-            Helpers.WritePlexMapCSV("C:\\Share\\H\\plex-map.csv", _plexMaps);
+            Helpers.WritePlexMapCSV(@"K:\Media\H\Media\plex-map.csv", _plexMaps);
 
             foreach (var plexMovie in _plexMovies)
             {
@@ -151,7 +151,7 @@ namespace PlexHelpers.PlexIMDBScraper
             }
 
 
-            Helpers.WritePlexMovieCSV("C:\\Share\\H\\plex-movies.csv", _plexMovies);
+            Helpers.WritePlexMovieCSV(@"K:\Media\H\Media\plex-movies.csv", _plexMovies);
         }
     }
 }

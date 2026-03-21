@@ -454,12 +454,31 @@ namespace PlexHelpers.Common
             File.WriteAllLines(filePath, lines);
         }
 
-        public static string ReplaceInvalidFilePathChars(string filename)
+        public static string ReplaceInvalidFilePathChars(string s)
         {
-            return string.Join("", filename.Split(Path.GetInvalidFileNameChars()));
+            //return string.Join("", filename.Split(Path.GetInvalidFileNameChars()));
+
+            if (string.IsNullOrWhiteSpace(s)) return "folder";
+
+            var cleaned = string.Join("", s.Split(Path.GetInvalidFileNameChars()))
+                                   .Trim()
+                                   .Trim('.');
+
+            if (string.IsNullOrWhiteSpace(cleaned))
+                return "unnamed";
+
+            var upper = cleaned.ToUpperInvariant();
+            string[] reserved = { "CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5",
+                          "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4",
+                          "LPT5", "LPT6", "LPT7", "LPT8", "LPT9" };
+
+            if (reserved.Contains(upper) || reserved.Any(r => upper.StartsWith(r + ".")))
+                cleaned += "_";
+
+            return cleaned.Length > 200 ? cleaned.Substring(0, 200) : cleaned;
         }
 
-        public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs)
+        public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs, bool replaceSpaces)
         {
             // Get the subdirectories for the specified directory.
             DirectoryInfo dir = new DirectoryInfo(sourceDirName);
@@ -480,7 +499,13 @@ namespace PlexHelpers.Common
             FileInfo[] files = dir.GetFiles();
             foreach (FileInfo file in files)
             {
-                string tempPath = Path.Combine(destDirName, file.Name);
+                var tempName = file.Name;
+                if (replaceSpaces)
+                {
+                    tempName = tempName.Replace(' ', '.');
+                }
+
+                string tempPath = Path.Combine(destDirName, tempName);
                 file.CopyTo(tempPath, false);
             }
 
@@ -490,7 +515,7 @@ namespace PlexHelpers.Common
                 foreach (DirectoryInfo subdir in dirs)
                 {
                     string tempPath = Path.Combine(destDirName, subdir.Name);
-                    DirectoryCopy(subdir.FullName, tempPath, copySubDirs);
+                    DirectoryCopy(subdir.FullName, tempPath, copySubDirs, replaceSpaces);
                 }
             }
         }

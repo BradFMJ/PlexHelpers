@@ -28,7 +28,7 @@ namespace PlexHelpers.TVSeriesMover
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
                 AllowAutoRedirect = false
             });
-            _client.BaseAddress = new Uri("http://localhost:8081/home/");
+            _client.BaseAddress = new Uri("http://192.168.1.207:8081/home/");
 
             _tvShows = Helpers.ReadMedusaTVShowCSV("C:\\Share\\H\\medusa_tvshows.csv");
             _episodes = Helpers.ReadMedusaEpisodeCSV("C:\\Share\\H\\medusa_episodes.csv");
@@ -74,13 +74,20 @@ namespace PlexHelpers.TVSeriesMover
                     //var targetDirectory2 = "C:\\Share\\tvshows\\1080P\\" + folderName;
 
 
+                    var indexString = Helpers.GetIndexerFriendlyName(tvShow.indexer);
+
                     if (!tvshowLocation.Exists)
                     {
                         Console.WriteLine("{0}/{1} CANNOT MOVE {2} to {3}. Source Directory Does Not Exist.", count, totalCount, tvShow.show_name, targetDirectory);
+                        //Remove From Medusa
+                        string requestUri = "deleteShow?showslug=" + indexString + tvShow.indexer_id;
+                        HttpResponseMessage response = _client.GetAsync(requestUri).Result;
+
+                        string result = response.Content.ReadAsStringAsync().Result;
+
+
                         continue;
                     }
-
-                    var indexString = Helpers.GetIndexerFriendlyName(tvShow.indexer);
 
                     if (string.IsNullOrWhiteSpace(indexString))
                     {

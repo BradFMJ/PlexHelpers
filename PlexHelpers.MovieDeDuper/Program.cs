@@ -72,7 +72,7 @@ namespace PlexHelpers.MovieDeDuper
                         {
                             //both are 1080p with a preferred release group
                             var bluray = matches.Where(p => p.FullFileName.ToLowerInvariant().Contains("bluray")).ToList();
-                            if(bluray.Count == 1)
+                            if (bluray.Count == 1)
                             {
                                 toBeSaved = bluray.First();
                             }
@@ -129,19 +129,40 @@ namespace PlexHelpers.MovieDeDuper
                             string input = string.Empty;
                             if (IsInteractive)
                             {
-                                Console.WriteLine("KEEP   {0}, {1}", TimeSpan.FromMilliseconds(toBeSaved.Duration).ToString(), toBeSaved.FileInfo.Name);
-                                Console.WriteLine("DELETE {0}, {1}", TimeSpan.FromMilliseconds(toBeRemoved.Duration).ToString(), toBeRemoved.FileInfo.Name);
+                                Console.WriteLine("KEEP   {0}, {1}", TimeSpan.FromMilliseconds(toBeSaved.Duration).ToString(), toBeSaved.FileInfo.FullName);
+                                Console.WriteLine("DELETE {0}, {1}", TimeSpan.FromMilliseconds(toBeRemoved.Duration).ToString(), toBeRemoved.FileInfo.FullName);
                                 Console.WriteLine("ENTER 'Y' TO DELETE");
                                 input = Console.ReadLine().ToLowerInvariant();
                             }
 
-                            if ((IsInteractive && input == "y") || !IsInteractive)
+                            if ((input == "y"))
                             {
-                                Console.WriteLine("DELETING {0} of {1}: {2}", count, total, toBeRemoved.FileInfo.DirectoryName);
+                                var filepath = toBeRemoved.FileInfo.DirectoryName.Replace("V:\\movies", "C:\\Share\\Movies");
+
+                                Console.WriteLine("DELETING {0} of {1}: {2}", count, total, filepath);
                                 if (CanDelete)
                                 {
                                     //https://www.c-sharpcorner.com/blogs/extension-methods-for-delete-files-and-folders-to-recycle-bin
-                                    Microsoft.VisualBasic.FileIO.FileSystem.DeleteDirectory(toBeRemoved.FileInfo.DirectoryName,
+                                    Microsoft.VisualBasic.FileIO.FileSystem.DeleteDirectory(filepath,
+                                        Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs,
+                                        Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
+                                }
+
+                                if (IsInteractive)
+                                {
+                                    Console.WriteLine("-------------------------------------------------");
+                                    Console.WriteLine("-------------------------------------------------");
+                                }
+                            }
+                            else if ((input == "2"))
+                            {
+                                var filepath = toBeSaved.FileInfo.DirectoryName.Replace("V:\\movies", "C:\\Share\\Movies");
+
+                                Console.WriteLine("DELETING {0} of {1}: {2}", count, total, toBeSaved.FileInfo.DirectoryName);
+                                if (CanDelete)
+                                {
+                                    //https://www.c-sharpcorner.com/blogs/extension-methods-for-delete-files-and-folders-to-recycle-bin
+                                    Microsoft.VisualBasic.FileIO.FileSystem.DeleteDirectory(filepath,
                                         Microsoft.VisualBasic.FileIO.UIOption.OnlyErrorDialogs,
                                         Microsoft.VisualBasic.FileIO.RecycleOption.SendToRecycleBin);
                                 }
