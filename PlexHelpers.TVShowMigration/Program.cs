@@ -7,9 +7,20 @@ class Program
     private static bool CanMove = true;
     private static bool CanDelete = true;
 
-    private static string _source = @"J:\Media\TV Shows\";
+    private static string _source = @"V:\tvshows\1080P\";
     private static string _target = @"T:\TVShows\1080P\";
+    private static string _tempTarget = @"T:\TVShows\Pending\";
 
+    //SELECT
+    //sh.year,
+    //file,
+    //sh.title
+    //FROM metadata_items m
+    //JOIN media_items mi ON m.id = mi.metadata_item_id
+    //JOIN media_parts p ON mi.id = p.media_item_id
+    //JOIN (SELECT id, parent_id FROM metadata_items WHERE metadata_type = 3) s on m.parent_id = s.id
+    //JOIN(SELECT id, title, year FROM metadata_items WHERE metadata_type = 2) sh on s.parent_id = sh.id
+    //WHERE m.metadata_type = 4
     private static string _sourceLocation = @"K:\Media\H\Media\tv-shows-migration.csv";
     private static string _logLocation = @"K:\Media\H\Media\tv-shows-migration-log.csv";
     private static string _errorLocation = @"K:\Media\H\Media\tv-shows-migration-errors.csv";
@@ -22,6 +33,7 @@ class Program
         public string Path = "";
         public string Title = "";
         public string Destination = "";
+        public string TempDestination = "";
         public string Source = "";
     }
 
@@ -241,12 +253,14 @@ class Program
             if (matches.Count() == 0)
             {
                 tvShow.Destination = _target + Helpers.ReplaceInvalidFilePathChars(tvShow.Title) + " (" + tvShow.Year + ")";
+                tvShow.TempDestination = _tempTarget + Helpers.ReplaceInvalidFilePathChars(tvShow.Title) + " (" + tvShow.Year + ")";
             }
             else if (matches.Count() == 1)
             {
                 if (string.Equals(matches[0].Value, "(" + tvShow.Year + ")"))
                 {
                     tvShow.Destination = _target + Helpers.ReplaceInvalidFilePathChars(tvShow.Title);
+                    tvShow.TempDestination = _tempTarget + Helpers.ReplaceInvalidFilePathChars(tvShow.Title);
                 }
                 else
                 {
@@ -256,6 +270,7 @@ class Program
                         File.AppendAllLines(_errorLocation, new List<string> { error });
                     }
                     Console.WriteLine(error);
+                    continue;
                 }
             }
             else
@@ -266,6 +281,7 @@ class Program
                     File.AppendAllLines(_errorLocation, new List<string> { error });
                 }
                 Console.WriteLine(error);
+                continue;
             }
 
             if (Directory.Exists(tvShow.Destination))
@@ -314,13 +330,28 @@ class Program
 
             #endregion
 
-            var result = "Moving: " + tvShow.Source + " to: " + tvShow.Destination;
+            #region Check Temp Destination Name
+
+            if (Directory.Exists(tvShow.TempDestination))
+            {
+                var error = "ERROR!" + tvShow.Source + " : " + tvShow.TempDestination + " destination already exists.";
+                if (CanMove)
+                {
+                    File.AppendAllLines(_errorLocation, new List<string> { error });
+                }
+                Console.WriteLine(error);
+                continue;
+            }
+
+            #endregion
+
+            var result = "Moving: " + tvShow.Source + " to: " + tvShow.TempDestination;
 
             Console.WriteLine(result);
 
             if (CanMove)
             {
-                Helpers.DirectoryCopy(tvShow.Source, tvShow.Destination, true, true);
+                Helpers.DirectoryCopy(tvShow.Source, tvShow.TempDestination, true, true);
                 File.AppendAllLines(_errorLocation, new List<string> { result });
                 File.AppendAllLines(_logLocation, new List<string> { tvShow.Source });
             }
