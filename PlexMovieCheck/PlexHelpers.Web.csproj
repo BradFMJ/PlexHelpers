@@ -80,6 +80,7 @@
     <Content Include="rarbg.asmx" />
     <Content Include="imdb.asmx" />
     <Content Include="rarbg.js" />
+    <Content Include="sonarr.js" />
     <Content Include="torrentgalaxy.js" />
     <Content Include="Web.config" />
     <Content Include="yts.asmx" />

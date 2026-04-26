@@ -1,5 +1,6 @@
 ﻿using PlexHelpers.Common;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace PlexHelpers.NewshostingMover
 
         static void Main(string[] args)
         {
-            CleanCompletedFolder(@"C:\Users\bradf\Downloads\Newshosting\ToProcess");
+            //CleanCompletedFolder(@"C:\Users\bradf\Downloads\Newshosting\ToProcess");
 
             MoveFiles(new DirectoryInfo(@"C:\Users\bradf\Downloads\Newshosting\ToProcess"));
 
@@ -22,24 +23,35 @@ namespace PlexHelpers.NewshostingMover
             RenameFiles(new DirectoryInfo(@"C:\Users\bradf\Downloads\Newshosting"));
         }
 
-        public static void MoveFiles(DirectoryInfo directoryInfo)
+        public static void RenameFolders(DirectoryInfo directoryInfo)
         {
             int i = 0;
             foreach (var directory in directoryInfo.GetDirectories())
             {
-                if (!string.Equals(directory.FullName, @"C:\Users\bradf\Downloads\Newshosting\ToProcess\" + i)
-                    && !Directory.Exists(@"C:\Users\bradf\Downloads\Newshosting\ToProcess\" + i))
+               
+                string currentDirectory = directory.FullName.Substring(0, directory.FullName.LastIndexOf('\\') + 1);
+
+                if (!Directory.Exists(currentDirectory + i))
                 {
-                    Directory.Move(directory.FullName, @"C:\Users\bradf\Downloads\Newshosting\ToProcess\" + i);
+                    Directory.Move(directory.FullName, currentDirectory + i);
+                    RenameFolders(new DirectoryInfo(currentDirectory + i));
+
                 }
+
 
                 i++;
             }
+        }
+
+        public static void MoveFiles(DirectoryInfo directoryInfo)
+        {
+            RenameFolders(directoryInfo);
 
             var tvShows = directoryInfo.GetFilesByExtensionsRecursive(Settings.VideoFileExtensions.ToArray());
             foreach (var tvShow in tvShows)
             {
-                string destFile = Path.Combine(@"C:\Users\bradf\Downloads\Newshosting", tvShow.Name);
+                var destName = tvShow.Name.Replace("_", ".").Replace(" ", ".").Replace("..", ".").Replace("..", ".").Replace("..", ".").Replace(".-.", ".");
+                string destFile = Path.Combine(@"C:\Users\bradf\Downloads\Newshosting", destName);
 
                 if (File.Exists(destFile))
                 {
@@ -88,7 +100,7 @@ namespace PlexHelpers.NewshostingMover
                 {
 
                 }
-                
+
             }
 
             return true;
@@ -138,11 +150,11 @@ namespace PlexHelpers.NewshostingMover
                 {
                     DeleteEmptyFolders(subDir);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
 
                 }
-                
+
             }
         }
 
@@ -175,7 +187,7 @@ namespace PlexHelpers.NewshostingMover
             var tvShows = directoryInfo.GetFilesByExtensions(Settings.VideoFileExtensions.ToArray());
             foreach (var tvShow in tvShows)
             {
-                string destFile = Path.Combine(@"C:\Users\bradf\Downloads\Newshosting", tvShow.Name.Replace("_","."));
+                string destFile = Path.Combine(@"C:\Users\bradf\Downloads\Newshosting", tvShow.Name.Replace(" ", ".").Replace("_", ".").Replace(".-.", "."));
 
                 if (File.Exists(destFile))
                 {
